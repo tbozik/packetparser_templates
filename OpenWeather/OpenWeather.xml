@@ -62,8 +62,8 @@ END</ReadScriptPacketParser>
         <InternalPollInterval>300000</InternalPollInterval>
         <CustomVariables>[{"Name":"longitude","ValueTypeId":2,"NumericValue":0,"StringValue":"$[longitude]"},{"Name":"latitude","ValueTypeId":2,"NumericValue":0,"StringValue":"$[latitude]"},{"Name":"AppId","ValueTypeId":2,"NumericValue":0,"StringValue":"$[appid]"},{"Name":"responseJson","ValueTypeId":2,"NumericValue":0,"StringValue":""},{"Name":"Daily","ValueTypeId":2,"NumericValue":0,"StringValue":""}]</CustomVariables>
         <IpAddress>api.openweathermap.org</IpAddress>
-        <Port>80</Port>
-        <UseHttps>False</UseHttps>
+        <Port>443</Port>
+        <UseHttps>True</UseHttps>
       </DeviceProperties>
       <Devices>
         <Device>
