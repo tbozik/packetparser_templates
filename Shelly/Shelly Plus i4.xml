@@ -56,8 +56,8 @@ VAR topic := PARSEJSON(jsonResponse, "Topic");
 if INDEXOF(topic, ID) = 0
 
     VAR payload := PARSEJSON(jsonResponse, "Payload");
-    VAR method := PARSEJSON(payload, "method");
-    VAR params := PARSEJSON(payload, "params");
+    VAR method := PARSEJSON(payload, "method", true);
+    VAR params := PARSEJSON(payload, "params", true);
 
     IF method = "NotifyEvent"
         VAR zero := PARSEJSON(PARSEJSON(params, "events"),"[0]");
@@ -97,8 +97,8 @@ VAR topic := PARSEJSON(jsonResponse, "Topic");
 if INDEXOF(topic, ID) = 0
 
     VAR payload := PARSEJSON(jsonResponse, "Payload");
-    VAR method := PARSEJSON(payload, "method");
-    VAR params := PARSEJSON(payload, "params");
+    VAR method := PARSEJSON(payload, "method", true);
+    VAR params := PARSEJSON(payload, "params", true);
 
     IF method = "NotifyEvent"
         VAR zero := PARSEJSON(PARSEJSON(params, "events"),"[0]");
@@ -138,8 +138,8 @@ VAR topic := PARSEJSON(jsonResponse, "Topic");
 if INDEXOF(topic, ID) = 0
 
     VAR payload := PARSEJSON(jsonResponse, "Payload");
-    VAR method := PARSEJSON(payload, "method");
-    VAR params := PARSEJSON(payload, "params");
+    VAR method := PARSEJSON(payload, "method", true);
+    VAR params := PARSEJSON(payload, "params", true);
 
     IF method = "NotifyEvent"
         VAR zero := PARSEJSON(PARSEJSON(params, "events"),"[0]");
@@ -179,8 +179,8 @@ VAR topic := PARSEJSON(jsonResponse, "Topic");
 if INDEXOF(topic, ID) = 0
 
     VAR payload := PARSEJSON(jsonResponse, "Payload");
-    VAR method := PARSEJSON(payload, "method");
-    VAR params := PARSEJSON(payload, "params");
+    VAR method := PARSEJSON(payload, "method", true);
+    VAR params := PARSEJSON(payload, "params", true);
 
     IF method = "NotifyEvent"
         VAR zero := PARSEJSON(PARSEJSON(params, "events"),"[0]");
@@ -218,9 +218,9 @@ END
 VAR topic := PARSEJSON(jsonResponse, "Topic");
 if INDEXOF(topic, ID) = 0
 
-VAR payload := PARSEJSON(jsonResponse, "Payload");
-VAR method := PARSEJSON(payload, "method");
-VAR params := PARSEJSON(payload, "params");
+    VAR payload := PARSEJSON(jsonResponse, "Payload");
+    VAR method := PARSEJSON(payload, "method", true);
+    VAR params := PARSEJSON(payload, "params", true);
 
     IF(method ="NotifyEvent")
     VAR zero := PARSEJSON(PARSEJSON(params, "events"),"[0]");
@@ -260,9 +260,9 @@ END</ListenerScriptPacketParser>
 VAR topic := PARSEJSON(jsonResponse, "Topic");
 if INDEXOF(topic, ID) = 0
 
-VAR payload := PARSEJSON(jsonResponse, "Payload");
-VAR method := PARSEJSON(payload, "method");
-VAR params := PARSEJSON(payload, "params");
+    VAR payload := PARSEJSON(jsonResponse, "Payload");
+    VAR method := PARSEJSON(payload, "method", true);
+    VAR params := PARSEJSON(payload, "params", true);
 
     IF(method ="NotifyEvent")
     VAR zero := PARSEJSON(PARSEJSON(params, "events"),"[0]");
@@ -302,9 +302,9 @@ END</ListenerScriptPacketParser>
 VAR topic := PARSEJSON(jsonResponse, "Topic");
 if INDEXOF(topic, ID) = 0
 
-VAR payload := PARSEJSON(jsonResponse, "Payload");
-VAR method := PARSEJSON(payload, "method");
-VAR params := PARSEJSON(payload, "params");
+    VAR payload := PARSEJSON(jsonResponse, "Payload");
+    VAR method := PARSEJSON(payload, "method", true);
+    VAR params := PARSEJSON(payload, "params", true);
 
     IF(method ="NotifyEvent")
     VAR zero := PARSEJSON(PARSEJSON(params, "events"),"[0]");
@@ -344,9 +344,9 @@ END</ListenerScriptPacketParser>
 VAR topic := PARSEJSON(jsonResponse, "Topic");
 if INDEXOF(topic, ID) = 0
 
-VAR payload := PARSEJSON(jsonResponse, "Payload");
-VAR method := PARSEJSON(payload, "method");
-VAR params := PARSEJSON(payload, "params");
+    VAR payload := PARSEJSON(jsonResponse, "Payload");
+    VAR method := PARSEJSON(payload, "method", true);
+    VAR params := PARSEJSON(payload, "params", true);
 
     IF(method ="NotifyEvent")
     VAR zero := PARSEJSON(PARSEJSON(params, "events"),"[0]");
