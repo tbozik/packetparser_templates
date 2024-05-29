@@ -59,9 +59,10 @@ end</ReadScriptPacketParser>
           <Model>PacketParserElectricityMeter</Model>
           <Id>-2</Id>
           <DeviceProperties>
-            <ReadScriptPacketParser />
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser></ReadScriptPacketParser>
             <InternalPollInterval>15000</InternalPollInterval>
-            <CustomVariables />
+            <CustomVariables></CustomVariables>
             <ServiceAttributesScriptsPacketParser>[{"AttributeDefinition":{"Name":"Inverter.AC.energy.out.daily [kWh]"},"ReadFormula":"parsejson(json, \u0022yieldtoday\u0022, 1)"}]</ServiceAttributesScriptsPacketParser>
             <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
             <ReadTotalConsumptionScriptPacketParser>parsejson(json, "yieldtotal", 1)</ReadTotalConsumptionScriptPacketParser>
@@ -69,19 +70,21 @@ end</ReadScriptPacketParser>
           </DeviceProperties>
         </Device>
         <Device>
-          <Name>Battery</Name>
-          <Model>PacketParserDimmer</Model>
+          <Name>${deviceType_BatterySOC}</Name>
+          <Model>PacketParserAnalogInput</Model>
           <Id>-3</Id>
           <DeviceProperties>
+            <DeviceType>11001</DeviceType>
+            <SerializedValueLogTypeConversions />
             <ReadScriptPacketParser />
             <InternalPollInterval>2500</InternalPollInterval>
             <CustomVariables />
             <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
             <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
             <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
-            <ReadLevelScriptPacketParser>parsejson(json, "soc", 1)</ReadLevelScriptPacketParser>
-            <WriteLevelScriptPacketParser></WriteLevelScriptPacketParser>
-            <IconId>3023</IconId>
+            <ReadInputLevelScriptPacketParser>parsejson(json, "soc", 1) / 100</ReadInputLevelScriptPacketParser>
+                                                                         
+                                 
           </DeviceProperties>
         </Device>
         <Device>
@@ -89,10 +92,11 @@ end</ReadScriptPacketParser>
           <Model>PacketParserVariable</Model>
           <Id>-4</Id>
           <DeviceProperties>
+            <DeviceType>0</DeviceType>
             <SerializedValueLogTypeConversions>{"60":"{\u0022ValueLogTypeConversionTypeId\u0022:3,\u0022SerializedValueLogTypeConversion\u0022:\u0022{\\u0022Value1OnInput\\u0022:0,\\u0022Value1OnOutput\\u0022:0,\\u0022Value2OnInput\\u0022:1000,\\u0022Value2OnOutput\\u0022:1,\\u0022SourceValueLogTypes\\u0022:[62],\\u0022TargetValueLogType\\u0022:60}\u0022}"}</SerializedValueLogTypeConversions>
             <ReadScriptPacketParser></ReadScriptPacketParser>
             <InternalPollInterval>15000</InternalPollInterval>
-            <CustomVariables />
+            <CustomVariables></CustomVariables>
             <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
             <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
             <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
@@ -102,13 +106,14 @@ end</ReadScriptPacketParser>
           </DeviceProperties>
         </Device>
         <Device>
-          <Name>From Grid</Name>
+          <Name>${deviceType_PVFromGrid}</Name>
           <Model>PacketParserElectricityMeter</Model>
           <Id>-5</Id>
           <DeviceProperties>
-            <ReadScriptPacketParser />
+            <DeviceType>9004</DeviceType>
+            <ReadScriptPacketParser></ReadScriptPacketParser>
             <InternalPollInterval>15000</InternalPollInterval>
-            <CustomVariables />
+            <CustomVariables></CustomVariables>
             <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
             <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
             <ReadTotalConsumptionScriptPacketParser>parsejson(json, "consumeenergy", 1)</ReadTotalConsumptionScriptPacketParser>
@@ -121,10 +126,11 @@ if(power &lt; 0, power * -1, 0) / 1000</ReadDemandScriptPacketParser>
           <Model>PacketParserVariable</Model>
           <Id>-6</Id>
           <DeviceProperties>
+            <DeviceType>0</DeviceType>
             <SerializedValueLogTypeConversions>{"60":"{\u0022ValueLogTypeConversionTypeId\u0022:3,\u0022SerializedValueLogTypeConversion\u0022:\u0022{\\u0022Value1OnInput\\u0022:0,\\u0022Value1OnOutput\\u0022:0,\\u0022Value2OnInput\\u0022:1000,\\u0022Value2OnOutput\\u0022:1,\\u0022SourceValueLogTypes\\u0022:[62],\\u0022TargetValueLogType\\u0022:60}\u0022}"}</SerializedValueLogTypeConversions>
             <ReadScriptPacketParser></ReadScriptPacketParser>
             <InternalPollInterval>15000</InternalPollInterval>
-            <CustomVariables />
+            <CustomVariables></CustomVariables>
             <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
             <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
             <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
@@ -134,10 +140,11 @@ if(power &lt; 0, power * -1, 0) / 1000</ReadDemandScriptPacketParser>
           </DeviceProperties>
         </Device>
         <Device>
-          <Name>PV production</Name>
+          <Name>${deviceType_PVProduction}</Name>
           <Model>PacketParserVariable</Model>
           <Id>-7</Id>
           <DeviceProperties>
+            <DeviceType>9002</DeviceType>
             <SerializedValueLogTypeConversions>{"60":"{\u0022ValueLogTypeConversionTypeId\u0022:3,\u0022SerializedValueLogTypeConversion\u0022:\u0022{\\u0022Value1OnInput\\u0022:0,\\u0022Value1OnOutput\\u0022:0,\\u0022Value2OnInput\\u0022:1000,\\u0022Value2OnOutput\\u0022:1,\\u0022SourceValueLogTypes\\u0022:[62],\\u0022TargetValueLogType\\u0022:60}\u0022}"}</SerializedValueLogTypeConversions>
             <ReadScriptPacketParser></ReadScriptPacketParser>
             <InternalPollInterval>15000</InternalPollInterval>
@@ -159,10 +166,11 @@ if(isnull(PV4), 0, PV4)</ReadStateScriptPacketParser>
           </DeviceProperties>
         </Device>
         <Device>
-          <Name>PV production (MPPT 1)</Name>
+          <Name>${deviceType_PVProduction} (MPPT 1)</Name>
           <Model>PacketParserVariable</Model>
           <Id>-8</Id>
           <DeviceProperties>
+            <DeviceType>9002</DeviceType>
             <SerializedValueLogTypeConversions>{"60":"{\u0022ValueLogTypeConversionTypeId\u0022:3,\u0022SerializedValueLogTypeConversion\u0022:\u0022{\\u0022Value1OnInput\\u0022:0,\\u0022Value1OnOutput\\u0022:0,\\u0022Value2OnInput\\u0022:1000,\\u0022Value2OnOutput\\u0022:1,\\u0022SourceValueLogTypes\\u0022:[62],\\u0022TargetValueLogType\\u0022:60}\u0022}"}</SerializedValueLogTypeConversions>
             <ReadScriptPacketParser></ReadScriptPacketParser>
             <InternalPollInterval>15000</InternalPollInterval>
@@ -176,10 +184,11 @@ if(isnull(PV4), 0, PV4)</ReadStateScriptPacketParser>
           </DeviceProperties>
         </Device>
         <Device>
-          <Name>PV production (MPPT 2)</Name>
+          <Name>${deviceType_PVProduction} (MPPT 2)</Name>
           <Model>PacketParserVariable</Model>
           <Id>-9</Id>
           <DeviceProperties>
+            <DeviceType>9002</DeviceType>
             <SerializedValueLogTypeConversions>{"60":"{\u0022ValueLogTypeConversionTypeId\u0022:3,\u0022SerializedValueLogTypeConversion\u0022:\u0022{\\u0022Value1OnInput\\u0022:0,\\u0022Value1OnOutput\\u0022:0,\\u0022Value2OnInput\\u0022:1000,\\u0022Value2OnOutput\\u0022:1,\\u0022SourceValueLogTypes\\u0022:[62],\\u0022TargetValueLogType\\u0022:60}\u0022}"}</SerializedValueLogTypeConversions>
             <ReadScriptPacketParser></ReadScriptPacketParser>
             <InternalPollInterval>15000</InternalPollInterval>
@@ -193,47 +202,50 @@ if(isnull(PV4), 0, PV4)</ReadStateScriptPacketParser>
           </DeviceProperties>
         </Device>
         <Device>
-          <Name>PV production (MPPT 3)</Name>
+          <Name>${deviceType_PVProduction} (MPPT 3)</Name>
           <Model>PacketParserVariable</Model>
           <Id>-10</Id>
           <DeviceProperties>
+            <DeviceType>9002</DeviceType>
             <SerializedValueLogTypeConversions>{"60":"{\u0022ValueLogTypeConversionTypeId\u0022:3,\u0022SerializedValueLogTypeConversion\u0022:\u0022{\\u0022Value1OnInput\\u0022:0,\\u0022Value1OnOutput\\u0022:0,\\u0022Value2OnInput\\u0022:1000,\\u0022Value2OnOutput\\u0022:1,\\u0022SourceValueLogTypes\\u0022:[62],\\u0022TargetValueLogType\\u0022:60}\u0022}"}</SerializedValueLogTypeConversions>
             <ReadScriptPacketParser>parsejson(json,"powerdc3",1)</ReadScriptPacketParser>
             <InternalPollInterval>15000</InternalPollInterval>
-            <CustomVariables />
+            <CustomVariables></CustomVariables>
             <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
             <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
             <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
             <IsReadOnly>True</IsReadOnly>
-            <ReadStateScriptPacketParser />
+            <ReadStateScriptPacketParser></ReadStateScriptPacketParser>
             <WriteStateScriptPacketParser></WriteStateScriptPacketParser>
           </DeviceProperties>
         </Device>
         <Device>
-          <Name>PV production (MPPT 4)</Name>
+          <Name>${deviceType_PVProduction} (MPPT 4)</Name>
           <Model>PacketParserVariable</Model>
           <Id>-11</Id>
           <DeviceProperties>
+            <DeviceType>9002</DeviceType>
             <SerializedValueLogTypeConversions>{"60":"{\u0022ValueLogTypeConversionTypeId\u0022:3,\u0022SerializedValueLogTypeConversion\u0022:\u0022{\\u0022Value1OnInput\\u0022:0,\\u0022Value1OnOutput\\u0022:0,\\u0022Value2OnInput\\u0022:1000,\\u0022Value2OnOutput\\u0022:1,\\u0022SourceValueLogTypes\\u0022:[62],\\u0022TargetValueLogType\\u0022:60}\u0022}"}</SerializedValueLogTypeConversions>
             <ReadScriptPacketParser>parsejson(json,"powerdc4",1)</ReadScriptPacketParser>
             <InternalPollInterval>15000</InternalPollInterval>
-            <CustomVariables />
+            <CustomVariables></CustomVariables>
             <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
             <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
             <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
             <IsReadOnly>True</IsReadOnly>
-            <ReadStateScriptPacketParser />
+            <ReadStateScriptPacketParser></ReadStateScriptPacketParser>
             <WriteStateScriptPacketParser></WriteStateScriptPacketParser>
           </DeviceProperties>
         </Device>
         <Device>
-          <Name>To Grid</Name>
+          <Name>${deviceType_PVToGrid}</Name>
           <Model>PacketParserElectricityMeter</Model>
           <Id>-12</Id>
           <DeviceProperties>
-            <ReadScriptPacketParser />
+            <DeviceType>9005</DeviceType>
+            <ReadScriptPacketParser></ReadScriptPacketParser>
             <InternalPollInterval>15000</InternalPollInterval>
-            <CustomVariables />
+            <CustomVariables></CustomVariables>
             <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
             <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
             <ReadTotalConsumptionScriptPacketParser>parsejson(json, "feedinenergy", 1)</ReadTotalConsumptionScriptPacketParser>
