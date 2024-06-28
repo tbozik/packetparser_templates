@@ -1,9 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Templates format="2" protocolVersion="73">
-  <Template revision="1.0" id = "1d211aab-03a2-46af-b44c-a7482fad4f70">
+<Templates format="2" protocolVersion="83">
+  <Template revision="1.1" id = "1d211aab-03a2-46af-b44c-a7482fad4f70">
     <SuggestedCCUParameters />
     <RevisionHistory>
       <Revision id="1.0">Initial version</Revision>
+      <Revision id="1.1">Changed to use RECEIVEDMSG</Revision>
     </RevisionHistory>
     <Name>Shelly H&amp;M MQTT</Name>
     <CcuModel>PacketParserCCU</CcuModel>
@@ -26,8 +27,8 @@ To find Device ID in browser interface go to Settings / Device Info / Device ID.
       </Parameter>
       <Parameter>
         <Name>Device ID</Name>	
-        <Value></Value>
-        <Id>dID</Id>
+        <Value>yourDeviceId</Value>
+        <Id>deviceId</Id>
       </Parameter>
 		</ImportParameters>
     <Module>
@@ -36,7 +37,7 @@ To find Device ID in browser interface go to Settings / Device Info / Device ID.
       <Model>PacketParserModuleMqtt</Model>
       <DeviceProperties>
         <InternalPollInterval>5000</InternalPollInterval>
-        <CustomVariables>[{"Name":"DeviceID","ValueTypeId":2,"NumericValue":0,"StringValue":"$[dID]"]</CustomVariables>
+        <CustomVariables>[{"Name":"deviceId","ValueTypeId":2,"NumericValue":0,"StringValue":"$[deviceId]"}]</CustomVariables>
         <IpAddress>$[IpAddress]</IpAddress>
         <Port>$[Port]</Port>
         <RootTopic>shellies/#</RootTopic>
@@ -53,23 +54,13 @@ To find Device ID in browser interface go to Settings / Device Info / Device ID.
             <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
             <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
             <ListenerScriptPacketParser># Parse received bytes:
-VAR command := tostring(RECEIVEDBYTES);
-IF(parsejson(command, "Topic") = "shellies/shellyht-"+DeviceID+"/sensor/temperature")
- listenTemp := todouble(parsejson(command,"Payload"));
+IF(RECEIVEDMSG.TOPIC = "shellies/shellyht-"+ deviceId +"/sensor/temperature")
+ listenTemp := todouble(TOSTRING(RECEIVEDMSG.PAYLOAD));
 END
-IF(parsejson(command, "Topic") = "shellies/shellyht-"+DeviceID+"/sensor/humidity")
- listenHum := todouble(parsejson(command,"Payload"))/100;
+IF(RECEIVEDMSG.TOPIC = "shellies/shellyht-"+ deviceId +"/sensor/humidity")
+ listenHum := todouble(TOSTRING(RECEIVEDMSG.PAYLOAD))/100;
 END
-#
-# Convert bytes to string:
-# VAR jsonResponse := TOSTRING(RECEIVEDBYTES);
-#
-# Specify string encoding:
-# VAR jsonResponse := TOSTRING(RECEIVEDBYTES, "iso-8859-1");
-#
-# Complete service attribute or service action:
-# COMPLETESERVICEATTRIBUTE("attributeName", value, errorMessage);
-# COMPLETESERVICEACTION("actionName", message);</ListenerScriptPacketParser>
+</ListenerScriptPacketParser>
             <TemperatureCalibration>0</TemperatureCalibration>
             <ReadTemperatureScriptPacketParser># Simple HTTP Request:
 # VAR response := SENDHTTPREQUEST("/example/getValue");

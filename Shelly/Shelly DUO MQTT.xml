@@ -1,9 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Templates format="2" protocolVersion="74">
-  <Template id="b1bc9d39-2b7a-4fb8-8d37-ee7d591a87cb" revision="1.0">
+<Templates format="2" protocolVersion="83">
+  <Template id="b1bc9d39-2b7a-4fb8-8d37-ee7d591a87cb" revision="1.1">
     <SuggestedCCUParameters />
     <RevisionHistory>
       <Revision id="1.0">Initial version</Revision>
+      <Revision id="1.1">Changed to use RECEIVEDMSG</Revision>
     </RevisionHistory>
     <Name>Shelly DUO MQTT</Name>
     <CcuModel>PacketParserCCU</CcuModel>
@@ -54,13 +55,10 @@ IF(INDEXOF(bulb1topic, "ShellyBulbDuo-deviceid") = 0)
     RETURN(-1);
 END
 
-VAR data := TOSTRING(RECEIVEDBYTES);
-VAR topic := PARSEJSON(data, "Topic");
-
-IF INDEXOF(topic, "shellies/" + bulb1topic + "/light/0/power") = 0
-    Ed := TODOUBLE(PARSEJSON(data, "Payload")) / 1000.0;
-ELSEIF INDEXOF(topic, "shellies/" + bulb1topic + "/light/0/energy") = 0
-    To := TODOUBLE(PARSEJSON(data, "Payload")) / 60000.0;
+IF INDEXOF(RECEIVEDMSG.TOPIC, "shellies/" + bulb1topic + "/light/0/power") = 0
+    Ed := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD)) / 1000.0;
+ELSEIF INDEXOF(RECEIVEDMSG.TOPIC, "shellies/" + bulb1topic + "/light/0/energy") = 0
+    To := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD)) / 60000.0;
 END</ListenerScriptPacketParser>
             <ReadTotalConsumptionScriptPacketParser></ReadTotalConsumptionScriptPacketParser>
             <ReadDemandScriptPacketParser></ReadDemandScriptPacketParser>
@@ -81,27 +79,22 @@ END</ListenerScriptPacketParser>
     RETURN(-1);
 END
 
-VAR data := TOSTRING(RECEIVEDBYTES);
-VAR topic := PARSEJSON(data, "Topic");
-
-IF INDEXOF(topic, "shellies/" + bulb1topic + "/light/0/status") != 0
+IF INDEXOF(RECEIVEDMSG.TOPIC, "shellies/" + bulb1topic + "/light/0/status") != 0
     RETURN(0);
 END
 
-VAR json := PARSEJSON(data, "Payload", 1);
-
-IF LENGTH(json) = 0
+IF RECEIVEDMSG.PAYLOAD.LENGTH = 0
     RETURN(0);
 END
 
-VAR ison := PARSEJSON(json, "$.ison", 1);
-VAR bright := PARSEJSON(json, "$.brightness");
+VAR ison := PARSEJSON(RECEIVEDMSG.PAYLOAD, "$.ison", 1);
+VAR bright := PARSEJSON(RECEIVEDMSG.PAYLOAD, "$.brightness");
 
 IF ISNULL(ison) OR ISNULL(bright)
     RETURN(0);
 END
 
-Ct := PARSEJSON(json, "$.temp", 1);
+Ct := PARSEJSON(RECEIVEDMSG.PAYLOAD, "$.temp", 1);
 
 IF ison
     Hb := bright / 100.0;
@@ -147,13 +140,10 @@ IF(INDEXOF(bulb2topic, "ShellyBulbDuo-deviceid") = 0)
     RETURN(-1);
 END
 
-VAR data := TOSTRING(RECEIVEDBYTES);
-VAR topic := PARSEJSON(data, "Topic");
-
-IF INDEXOF(topic, "shellies/" + bulb2topic + "/light/0/power") = 0
-    Ed := TODOUBLE(PARSEJSON(data, "Payload")) / 1000.0;
-ELSEIF INDEXOF(topic, "shellies/" + bulb2topic + "/light/0/energy") = 0
-    To := TODOUBLE(PARSEJSON(data, "Payload")) / 60000.0;
+IF INDEXOF(RECEIVEDMSG.TOPIC, "shellies/" + bulb2topic + "/light/0/power") = 0
+    Ed := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD)) / 1000.0;
+ELSEIF INDEXOF(RECEIVEDMSG.TOPIC, "shellies/" + bulb2topic + "/light/0/energy") = 0
+    To := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD)) / 60000.0;
 END</ListenerScriptPacketParser>
             <ReadTotalConsumptionScriptPacketParser></ReadTotalConsumptionScriptPacketParser>
             <ReadDemandScriptPacketParser></ReadDemandScriptPacketParser>
@@ -174,27 +164,22 @@ END</ListenerScriptPacketParser>
     RETURN(-1);
 END
 
-VAR data := TOSTRING(RECEIVEDBYTES);
-VAR topic := PARSEJSON(data, "Topic");
-
-IF INDEXOF(topic, "shellies/" + bulb2topic + "/light/0/status") != 0
+IF INDEXOF(RECEIVEDMSG.TOPIC, "shellies/" + bulb2topic + "/light/0/status") != 0
     RETURN(0);
 END
 
-VAR json := PARSEJSON(data, "Payload", 1);
-
-IF LENGTH(json) = 0
+IF RECEIVEDMSG.PAYLOAD.LENGTH = 0
     RETURN(0);
 END
 
-VAR ison := PARSEJSON(json, "$.ison", 1);
-VAR bright := PARSEJSON(json, "$.brightness");
+VAR ison := PARSEJSON(RECEIVEDMSG.PAYLOAD, "$.ison", 1);
+VAR bright := PARSEJSON(RECEIVEDMSG.PAYLOAD, "$.brightness");
 
 IF ISNULL(ison) OR ISNULL(bright)
     RETURN(0);
 END
 
-Ct := PARSEJSON(json, "$.temp", 1);
+Ct := PARSEJSON(RECEIVEDMSG.PAYLOAD, "$.temp", 1);
 
 IF ison
     Hb := bright / 100.0;
@@ -240,13 +225,10 @@ IF(INDEXOF(bulb3topic, "ShellyBulbDuo-deviceid") = 0)
     RETURN(-1);
 END
 
-VAR data := TOSTRING(RECEIVEDBYTES);
-VAR topic := PARSEJSON(data, "Topic");
-
-IF INDEXOF(topic, "shellies/" + bulb3topic + "/light/0/power") = 0
-    Ed := TODOUBLE(PARSEJSON(data, "Payload")) / 1000.0;
-ELSEIF INDEXOF(topic, "shellies/" + bulb3topic + "/light/0/energy") = 0
-    To := TODOUBLE(PARSEJSON(data, "Payload")) / 60000.0;
+IF INDEXOF(RECEIVEDMSG.TOPIC, "shellies/" + bulb3topic + "/light/0/power") = 0
+    Ed := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD)) / 1000.0;
+ELSEIF INDEXOF(RECEIVEDMSG.TOPIC, "shellies/" + bulb3topic + "/light/0/energy") = 0
+    To := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD)) / 60000.0;
 END</ListenerScriptPacketParser>
             <ReadTotalConsumptionScriptPacketParser></ReadTotalConsumptionScriptPacketParser>
             <ReadDemandScriptPacketParser></ReadDemandScriptPacketParser>
@@ -267,27 +249,22 @@ END</ListenerScriptPacketParser>
     RETURN(-1);
 END
 
-VAR data := TOSTRING(RECEIVEDBYTES);
-VAR topic := PARSEJSON(data, "Topic");
-
-IF INDEXOF(topic, "shellies/" + bulb3topic + "/light/0/status") != 0
+IF INDEXOF(RECEIVEDMSG.TOPIC, "shellies/" + bulb3topic + "/light/0/status") != 0
     RETURN(0);
 END
 
-VAR json := PARSEJSON(data, "Payload", 1);
-
-IF LENGTH(json) = 0
+IF RECEIVEDMSG.PAYLOAD.LENGTH = 0
     RETURN(0);
 END
 
-VAR ison := PARSEJSON(json, "$.ison", 1);
-VAR bright := PARSEJSON(json, "$.brightness");
+VAR ison := PARSEJSON(RECEIVEDMSG.PAYLOAD, "$.ison", 1);
+VAR bright := PARSEJSON(RECEIVEDMSG.PAYLOAD, "$.brightness");
 
 IF ISNULL(ison) OR ISNULL(bright)
     RETURN(0);
 END
 
-Ct := PARSEJSON(json, "$.temp", 1);
+Ct := PARSEJSON(RECEIVEDMSG.PAYLOAD, "$.temp", 1);
 
 IF ison
     Hb := bright / 100.0;
@@ -333,13 +310,10 @@ IF(INDEXOF(bulb4topic, "ShellyBulbDuo-deviceid") = 0)
     RETURN(-1);
 END
 
-VAR data := TOSTRING(RECEIVEDBYTES);
-VAR topic := PARSEJSON(data, "Topic");
-
-IF INDEXOF(topic, "shellies/" + bulb4topic + "/light/0/power") = 0
-    Ed := TODOUBLE(PARSEJSON(data, "Payload")) / 1000.0;
-ELSEIF INDEXOF(topic, "shellies/" + bulb4topic + "/light/0/energy") = 0
-    To := TODOUBLE(PARSEJSON(data, "Payload")) / 60000.0;
+IF INDEXOF(RECEIVEDMSG.TOPIC, "shellies/" + bulb4topic + "/light/0/power") = 0
+    Ed := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD)) / 1000.0;
+ELSEIF INDEXOF(RECEIVEDMSG.TOPIC, "shellies/" + bulb4topic + "/light/0/energy") = 0
+    To := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD)) / 60000.0;
 END</ListenerScriptPacketParser>
             <ReadTotalConsumptionScriptPacketParser></ReadTotalConsumptionScriptPacketParser>
             <ReadDemandScriptPacketParser></ReadDemandScriptPacketParser>
@@ -360,27 +334,22 @@ END</ListenerScriptPacketParser>
     RETURN(-1);
 END
 
-VAR data := TOSTRING(RECEIVEDBYTES);
-VAR topic := PARSEJSON(data, "Topic");
-
-IF INDEXOF(topic, "shellies/" + bulb4topic + "/light/0/status") != 0
+IF INDEXOF(RECEIVEDMSG.TOPIC, "shellies/" + bulb4topic + "/light/0/status") != 0
     RETURN(0);
 END
 
-VAR json := PARSEJSON(data, "Payload", 1);
-
-IF LENGTH(json) = 0
+IF RECEIVEDMSG.PAYLOAD.LENGTH = 0
     RETURN(0);
 END
 
-VAR ison := PARSEJSON(json, "$.ison", 1);
-VAR bright := PARSEJSON(json, "$.brightness");
+VAR ison := PARSEJSON(RECEIVEDMSG.PAYLOAD, "$.ison", 1);
+VAR bright := PARSEJSON(RECEIVEDMSG.PAYLOAD, "$.brightness");
 
 IF ISNULL(ison) OR ISNULL(bright)
     RETURN(0);
 END
 
-Ct := PARSEJSON(json, "$.temp", 1);
+Ct := PARSEJSON(RECEIVEDMSG.PAYLOAD, "$.temp", 1);
 
 IF ison
     Hb := bright / 100.0;
@@ -426,13 +395,10 @@ IF(INDEXOF(bulb5topic, "ShellyBulbDuo-deviceid") = 0)
     RETURN(-1);
 END
 
-VAR data := TOSTRING(RECEIVEDBYTES);
-VAR topic := PARSEJSON(data, "Topic");
-
-IF INDEXOF(topic, "shellies/" + bulb5topic + "/light/0/power") = 0
-    Ed := TODOUBLE(PARSEJSON(data, "Payload")) / 1000.0;
-ELSEIF INDEXOF(topic, "shellies/" + bulb5topic + "/light/0/energy") = 0
-    To := TODOUBLE(PARSEJSON(data, "Payload")) / 60000.0;
+IF INDEXOF(RECEIVEDMSG.TOPIC, "shellies/" + bulb5topic + "/light/0/power") = 0
+    Ed := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD)) / 1000.0;
+ELSEIF INDEXOF(RECEIVEDMSG.TOPIC, "shellies/" + bulb5topic + "/light/0/energy") = 0
+    To := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD)) / 60000.0;
 END</ListenerScriptPacketParser>
             <ReadTotalConsumptionScriptPacketParser></ReadTotalConsumptionScriptPacketParser>
             <ReadDemandScriptPacketParser></ReadDemandScriptPacketParser>
@@ -453,27 +419,22 @@ END</ListenerScriptPacketParser>
     RETURN(-1);
 END
 
-VAR data := TOSTRING(RECEIVEDBYTES);
-VAR topic := PARSEJSON(data, "Topic");
-
-IF INDEXOF(topic, "shellies/" + bulb5topic + "/light/0/status") != 0
+IF INDEXOF(RECEIVEDMSG.TOPIC, "shellies/" + bulb5topic + "/light/0/status") != 0
     RETURN(0);
 END
 
-VAR json := PARSEJSON(data, "Payload", 1);
-
-IF LENGTH(json) = 0
+IF RECEIVEDMSG.PAYLOAD.LENGTH = 0
     RETURN(0);
 END
 
-VAR ison := PARSEJSON(json, "$.ison", 1);
-VAR bright := PARSEJSON(json, "$.brightness");
+VAR ison := PARSEJSON(RECEIVEDMSG.PAYLOAD, "$.ison", 1);
+VAR bright := PARSEJSON(RECEIVEDMSG.PAYLOAD, "$.brightness");
 
 IF ISNULL(ison) OR ISNULL(bright)
     RETURN(0);
 END
 
-Ct := PARSEJSON(json, "$.temp", 1);
+Ct := PARSEJSON(RECEIVEDMSG.PAYLOAD, "$.temp", 1);
 
 IF ison
     Hb := bright / 100.0;
