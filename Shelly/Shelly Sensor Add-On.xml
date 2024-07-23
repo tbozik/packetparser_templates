@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Templates format="2" protocolVersion="83">
+  <Template revision="1.0" id="f80c0e38-6a3a-4ca3-b4a5-34164e0f7580">
+    <SuggestedCCUParameters />
+    <RevisionHistory>
+      <Revision id="1.0">Initial version</Revision>
+    </RevisionHistory>
+    <Name>Shelly Sensor Add-On</Name>
+    <CcuModel>PacketParserCCU</CcuModel>
+    <Producer>Shelly</Producer>
+    <Model>Sensor Add-On</Model>
+    <Description>Sensors have to be enabled and configured in shelly UI</Description>
+    <ImportParameters>
+        <Parameter>
+            <Name>${ipAddress}</Name>	
+            <Value>192.168.0.1</Value>
+            <Id>IpAddress</Id>
+        </Parameter>
+    </ImportParameters>    
+    <Module>
+      <Name>Shelly Sensor Add-On</Name>
+      <Id>-1</Id>
+      <Model>PacketParserModuleHttp</Model>
+      <DeviceProperties>
+        <ReadScriptPacketParser>var res := sendhttprequest("/rpc/Sys.GetStatus");
+SysGetStatus := res.Content;
+res := sendhttprequest("/rpc/SensorAddon.GetPeripherals");
+SensorAddonGetPeripherals := res.Content;
+</ReadScriptPacketParser>
+        <InternalPollInterval>5000</InternalPollInterval>
+        <CustomVariables>[{"Name":"SysGetStatus","ValueTypeId":2,"NumericValue":0,"StringValue":""},{"Name":"SensorAddonGetPeripherals","ValueTypeId":2,"NumericValue":0,"StringValue":""}]</CustomVariables>
+        <IpAddress>$[IpAddress]</IpAddress>
+        <Port>80</Port>
+        <UseHttps>False</UseHttps>
+      </DeviceProperties>
+      <Devices>
+        <Device>
+          <Name>${AnalogInput} (100)</Name>
+          <Model>PacketParserAnalogInput</Model>
+          <Id>-2</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <SerializedValueLogTypeConversions />
+            <ReadScriptPacketParser />
+            <InternalPollInterval>2500</InternalPollInterval>
+            <CustomVariables>[{"Name":"Id","ValueTypeId":1,"NumericValue":100}]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <ReadInputLevelScriptPacketParser>var res := sendhttprequest("/rpc/Input.GetStatus?id=" + Id);
+parsejson(res.Content, "percent") / 100</ReadInputLevelScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>${bus_module_reed_contact} (100)</Name>
+          <Model>PacketParserReedContact</Model>
+          <Id>-3</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser></ReadScriptPacketParser>
+            <InternalPollInterval>2500</InternalPollInterval>
+            <CustomVariables>[{"Name":"Id","ValueTypeId":1,"NumericValue":100}]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <OnStateIconId>87</OnStateIconId>
+            <OffStateIconId>88</OffStateIconId>
+            <OnStateName>${general_open}</OnStateName>
+            <OffStateName>${general_closed}</OffStateName>
+            <ReadStateScriptPacketParser>var res := sendhttprequest("/rpc/Input.GetStatus?id=" + Id);
+parsejson(res.Content, "state")</ReadStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>${temperatureSensor} ds18b20 (100)</Name>
+          <Model>PacketParserTemperatureSensor</Model>
+          <Id>-4</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser></ReadScriptPacketParser>
+            <InternalPollInterval>15000</InternalPollInterval>
+            <CustomVariables>[{"Name":"Id","ValueTypeId":1,"NumericValue":100}]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ReadTemperatureScriptPacketParser>var res := sendhttprequest("/rpc/Temperature.GetStatus?id=" + Id);
+parsejson(res.Content, "tC")</ReadTemperatureScriptPacketParser>
+            <ReadHumidityScriptPacketParser>NaN</ReadHumidityScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>${temperatureSensor} ds18b20 (101)</Name>
+          <Model>PacketParserTemperatureSensor</Model>
+          <Id>-5</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>15000</InternalPollInterval>
+            <CustomVariables>[{"Name":"Id","ValueTypeId":1,"NumericValue":101}]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ReadTemperatureScriptPacketParser>var res := sendhttprequest("/rpc/Temperature.GetStatus?id=" + Id);
+parsejson(res.Content, "tC")</ReadTemperatureScriptPacketParser>
+            <ReadHumidityScriptPacketParser>NaN</ReadHumidityScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>${temperatureSensor} ds18b20 (102)</Name>
+          <Model>PacketParserTemperatureSensor</Model>
+          <Id>-6</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>15000</InternalPollInterval>
+            <CustomVariables>[{"Name":"Id","ValueTypeId":1,"NumericValue":102}]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ReadTemperatureScriptPacketParser>var res := sendhttprequest("/rpc/Temperature.GetStatus?id=" + Id);
+parsejson(res.Content, "tC")</ReadTemperatureScriptPacketParser>
+            <ReadHumidityScriptPacketParser>NaN</ReadHumidityScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>${temperatureSensor} ds18b20 (103)</Name>
+          <Model>PacketParserTemperatureSensor</Model>
+          <Id>-7</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>15000</InternalPollInterval>
+            <CustomVariables>[{"Name":"Id","ValueTypeId":1,"NumericValue":103}]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ReadTemperatureScriptPacketParser>var res := sendhttprequest("/rpc/Temperature.GetStatus?id=" + Id);
+parsejson(res.Content, "tC")</ReadTemperatureScriptPacketParser>
+            <ReadHumidityScriptPacketParser>NaN</ReadHumidityScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>Voltmeter (100)</Name>
+          <Model>PacketParserVariable</Model>
+          <Id>-8</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <SerializedValueLogTypeConversions>{"87":"{\u0022ValueLogTypeConversionTypeId\u0022:3,\u0022SerializedValueLogTypeConversion\u0022:\u0022{\\u0022Value1OnInput\\u0022:0,\\u0022Value1OnOutput\\u0022:0,\\u0022Value2OnInput\\u0022:1,\\u0022Value2OnOutput\\u0022:1,\\u0022SourceValueLogTypes\\u0022:[62],\\u0022TargetValueLogType\\u0022:87}\u0022}"}</SerializedValueLogTypeConversions>
+            <ReadScriptPacketParser></ReadScriptPacketParser>
+            <InternalPollInterval>15000</InternalPollInterval>
+            <CustomVariables>[{"Name":"Id","ValueTypeId":1,"NumericValue":100}]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <IsReadOnly>True</IsReadOnly>
+            <ReadStateScriptPacketParser>var res := sendhttprequest("/rpc/Voltmeter.GetStatus?id=" + Id);
+parsejson(res.Content, "voltage")</ReadStateScriptPacketParser>
+            <WriteStateScriptPacketParser></WriteStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+      </Devices>
+    </Module>
+  </Template>
+</Templates>

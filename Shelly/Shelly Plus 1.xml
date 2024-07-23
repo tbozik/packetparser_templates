@@ -7,8 +7,15 @@
     </RevisionHistory>
     <Name>Shelly Plus 1</Name>
     <CcuModel>PacketParserCCU</CcuModel>
-    <Producer></Producer>
-    <Model></Model>
+    <Producer>Shelly</Producer>
+    <Model>Plus 1</Model>
+    <ImportParameters>
+        <Parameter>
+            <Name>${ipAddress}</Name>	
+            <Value>192.168.0.1</Value>
+            <Id>IpAddress</Id>
+        </Parameter>
+    </ImportParameters>     
     <Description></Description>
     <Module>
       <Name>Shelly Plus 1</Name>
