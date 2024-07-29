@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Templates format="2" protocolVersion="83" locationId="f8904c5b-737c-491c-89db-a0b44237a93b">
-  <Template revision="1.0">
+<Templates format="2" protocolVersion="83">
+  <Template revision="1.0" id ="59d01792-36f4-4129-a066-c3c580e4de35">
     <SuggestedCCUParameters />
     <RevisionHistory>
       <Revision id="1.0">Initial version</Revision>
@@ -10,6 +10,17 @@
     <Producer></Producer>
     <Model></Model>
     <Description></Description>
+    <ImportParameters>
+      <Parameter>
+        <Name>Mqtt Broker ${ipAddress}</Name>	
+        <Value>192.168.0.1</Value>
+        <Id>IpAddress</Id>
+      </Parameter>
+          <Parameter>
+        <Name>Mqtt Broker port</Name>	
+        <Value>1883</Value>
+        <Id>Port</Id>
+    </ImportParameters>
     <Module>
       <Name>Xiaomi RTCGQ11LM</Name>
       <Id>-1</Id>
@@ -17,8 +28,8 @@
       <DeviceProperties>
         <InternalPollInterval>15000</InternalPollInterval>
         <CustomVariables>[{"Name":"XiaomiRTCGQ11LM","ValueTypeId":2,"NumericValue":0,"StringValue":"0x00158d00036cd3e2"}]</CustomVariables>
-        <IpAddress>192.168.1.200</IpAddress>
-        <Port>1883</Port>
+        <IpAddress>$[IpAddress]</IpAddress>
+        <Port>$[Port]</Port>
         <RootTopic>zigbee2mqtt/#</RootTopic>
       </DeviceProperties>
       <Devices>

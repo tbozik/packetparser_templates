@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Templates format="2" protocolVersion="83" locationId="f8904c5b-737c-491c-89db-a0b44237a93b">
-  <Template revision="1.0">
+<Templates format="2" protocolVersion="83">
+  <Template revision="1.0" id ="734dbcce-5687-4f30-90d7-d3a8a09f7455">
     <SuggestedCCUParameters />
     <RevisionHistory>
       <Revision id="1.0">Initial version</Revision>
@@ -10,6 +10,17 @@
     <Producer></Producer>
     <Model></Model>
     <Description></Description>
+    <ImportParameters>
+      <Parameter>
+        <Name>Mqtt Broker ${ipAddress}</Name>	
+        <Value>192.168.0.1</Value>
+        <Id>IpAddress</Id>
+      </Parameter>
+          <Parameter>
+        <Name>Mqtt Broker port</Name>	
+        <Value>1883</Value>
+        <Id>Port</Id>
+    </ImportParameters>
     <Module>
       <Name>Temperature/Humidity TS0201</Name>
       <Id>-1</Id>
@@ -17,8 +28,8 @@
       <DeviceProperties>
         <InternalPollInterval>15000</InternalPollInterval>
         <CustomVariables>[{"Name":"TS0201","ValueTypeId":2,"NumericValue":0,"StringValue":"0xa4c1388f85d9eca2"}]</CustomVariables>
-        <IpAddress>192.168.1.200</IpAddress>
-        <Port>1883</Port>
+        <IpAddress>$[IpAddress]</IpAddress>
+        <Port>$[Port]</Port>
         <RootTopic>zigbee2mqtt/#</RootTopic>
       </DeviceProperties>
       <Devices>
