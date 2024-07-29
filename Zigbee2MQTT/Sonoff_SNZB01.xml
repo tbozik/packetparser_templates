@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Templates format="2" protocolVersion="83" locationId="f8904c5b-737c-491c-89db-a0b44237a93b">
+  <Template revision="1.0">
+    <SuggestedCCUParameters />
+    <RevisionHistory>
+      <Revision id="1.0">Initial version</Revision>
+    </RevisionHistory>
+    <Name>Sonoff_SNZB01</Name>
+    <CcuModel>PacketParserCCU</CcuModel>
+    <Producer></Producer>
+    <Model></Model>
+    <Description></Description>
+    <Module>
+      <Name>Sonoff_SNZB01</Name>
+      <Id>-1</Id>
+      <Model>PacketParserModuleMqtt</Model>
+      <DeviceProperties>
+        <InternalPollInterval>15000</InternalPollInterval>
+        <CustomVariables>[{"Name":"SonoffSNZB01","ValueTypeId":2,"NumericValue":0,"StringValue":"0x00124b001eab21e5"}]</CustomVariables>
+        <IpAddress>192.168.1.200</IpAddress>
+        <Port>1883</Port>
+        <RootTopic>zigbee2mqtt/#</RootTopic>
+      </DeviceProperties>
+      <Devices>
+        <Device>
+          <Name>Sonoff-SNZB-01-1</Name>
+          <Model>PacketParserPushButton</Model>
+          <Id>-2</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser></ReadScriptPacketParser>
+            <InternalPollInterval>10000</InternalPollInterval>
+            <CustomVariables>[{"Name":"battery","ValueTypeId":1,"NumericValue":0},{"Name":"voltage","ValueTypeId":1,"NumericValue":0},{"Name":"link","ValueTypeId":1,"NumericValue":0}]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser>[{"AttributeDefinition":{"Name":"Battery"},"ReadFormula":"IF(ISNAN(battery),\u0022-\u0022,battery\u002B\u0022%\u0022);"},{"AttributeDefinition":{"Name":"LinkQuality"},"ReadFormula":"IF(ISNAN(link),\u0022-\u0022,link\u002B\u0022lqi\u0022);"},{"AttributeDefinition":{"Name":"BatteryVoltage"},"ReadFormula":"IF(ISNAN(voltage),\u0022-\u0022,voltage\u002B\u0022mV\u0022);"}]</ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser>[]</ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser>Bp := 0;
+
+IF (COMPARE(RECEIVEDMSG.TOPIC, "zigbee2mqtt/"+ SonoffSNZB01 +"/action", CompareOptions.IgnoreCase) = 0)
+	var payloadString := TOSTRING(RECEIVEDMSG.PAYLOAD);
+	
+    IF (COMPARE(payloadString, "single", CompareOptions.IgnoreCase) = 0)
+          Bp := 1;
+        ELSEIF (COMPARE(payloadString, "long", CompareOptions.IgnoreCase) = 0)
+          Bp := 2;
+        ELSEIF (COMPARE(payloadString, "double", CompareOptions.IgnoreCase) = 0)
+          Bp := 3;
+        ELSE
+          Bp := 0;
+    END  
+END;   
+
+IF (COMPARE(RECEIVEDMSG.TOPIC, "zigbee2mqtt/"+ SonoffSNZB01, CompareOptions.IgnoreCase) = 0)
+    battery := PARSEJSON(RECEIVEDMSG.PAYLOAD,"battery", true);
+    voltage := PARSEJSON(RECEIVEDMSG.PAYLOAD,"voltage", true);
+    link := PARSEJSON(RECEIVEDMSG.PAYLOAD,"linkquality", true);
+    
+END
+
+
+
+</ListenerScriptPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <ReadButtonPressedStateScriptPacketParser>Bp := 0;</ReadButtonPressedStateScriptPacketParser>
+            <WriteButtonPressedStateScriptPacketParser># Simple HTTP Request:
+# VAR response := SENDHTTPREQUEST("/example/set/value=" + Bp);
+# IF response.IsSuccess = false
+#  ADDERROR(response.StatusCode);
+# END
+#
+# Set Http request method, body and headers
+# VAR response := SENDHTTPREQUEST("/example/setValue", "GET", "value=" + Bp, "header1:value1", "header2:value2", ...);\r
+# Or VAR request := HTTPREQUEST("/example/setValue");
+# request.Method := "PUT";
+# VAR response := SENDHTTPREQUEST(request);
+#r
+#
+# Send TCP, UDP data:
+# VAR data1 := "{\"name\":\"John\", \"age\":" + Bp + "}";
+# SENDDATA(data1);
+# VAR data2 := TOBYTES("{\"name\":\"John\", \"age\":" + Bp + "}", "iso-8859-1");
+# SENDDATA(data2);
+# You can process received TCP or UDP data in the Listener script
+#
+#
+# Upload data to FTP:
+# FTPUPLOAD("filePath", "somedata=" + Bp, "write"); # use "append" mode to append data to existing file</WriteButtonPressedStateScriptPacketParser>
+            <IconId>86</IconId>
+          </DeviceProperties>
+        </Device>
+      </Devices>
+    </Module>
+  </Template>
+</Templates>

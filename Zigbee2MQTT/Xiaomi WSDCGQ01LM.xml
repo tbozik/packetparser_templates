@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Templates format="2" protocolVersion="83" locationId="f8904c5b-737c-491c-89db-a0b44237a93b">
+  <Template revision="1.0">
+    <SuggestedCCUParameters />
+    <RevisionHistory>
+      <Revision id="1.0">Initial version</Revision>
+    </RevisionHistory>
+    <Name>Xiaomi WSDCGQ01LM</Name>
+    <CcuModel>PacketParserCCU</CcuModel>
+    <Producer></Producer>
+    <Model></Model>
+    <Description></Description>
+    <Module>
+      <Name>Xiaomi WSDCGQ01LM</Name>
+      <Id>-1</Id>
+      <Model>PacketParserModuleMqtt</Model>
+      <DeviceProperties>
+        <InternalPollInterval>15000</InternalPollInterval>
+        <CustomVariables>[{"Name":"Xiaomi_WSDCGQ01LM_1","ValueTypeId":2,"NumericValue":0,"StringValue":"0x00158d0001823a01"}]</CustomVariables>
+        <IpAddress>192.168.1.200</IpAddress>
+        <Port>1883</Port>
+        <RootTopic>zigbee2mqtt/#</RootTopic>
+      </DeviceProperties>
+      <Devices>
+        <Device>
+          <Name>Xiaomi WSDCGQ01LM</Name>
+          <Model>PacketParserTemperatureSensor</Model>
+          <Id>-2</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser></ReadScriptPacketParser>
+            <InternalPollInterval>10000</InternalPollInterval>
+            <CustomVariables>[{"Name":"battery","ValueTypeId":1,"NumericValue":"NaN"},{"Name":"voltage","ValueTypeId":1,"NumericValue":"NaN"},{"Name":"link","ValueTypeId":1,"NumericValue":0}]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser>[{"AttributeDefinition":{"Name":"Battery"},"ReadFormula":"IF (ISNAN(battery), \u0022-\u0022, battery \u002B \u0022%\u0022);"},{"AttributeDefinition":{"Name":"Battery voltage"},"ReadFormula":"IF (ISNAN(voltage), \u0022-\u0022, voltage \u002B \u0022mV\u0022);"},{"AttributeDefinition":{"Name":"Atrib\u00FAt"},"ReadFormula":"IF (ISNAN(link), \u0022-\u0022, link \u002B \u0022lqi\u0022);"}]</ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser>[]</ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser>if RECEIVEDMSG.TOPIC = "zigbee2mqtt/"+ Xiaomi_WSDCGQ01LM_1 
+   VAR payloadTemp := PARSEJSON(RECEIVEDMSG.PAYLOAD, "temperature");
+   Te := payloadTemp;
+   VAR payloadHum := PARSEJSON(RECEIVEDMSG.PAYLOAD, "humidity");
+   Hu := payloadHum/100;
+   battery := PARSEJSON(RECEIVEDMSG.PAYLOAD,"battery", true);
+   voltage := PARSEJSON(RECEIVEDMSG.PAYLOAD,"voltage", true);
+   link := PARSEJSON(RECEIVEDMSG.PAYLOAD,"linkquality", true);
+end
+
+
+
+
+</ListenerScriptPacketParser>
+            <ReadTemperatureScriptPacketParser></ReadTemperatureScriptPacketParser>
+            <ReadHumidityScriptPacketParser></ReadHumidityScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+      </Devices>
+    </Module>
+  </Template>
+</Templates>

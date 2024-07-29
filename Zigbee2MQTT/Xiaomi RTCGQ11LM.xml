@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Templates format="2" protocolVersion="83" locationId="f8904c5b-737c-491c-89db-a0b44237a93b">
+  <Template revision="1.0">
+    <SuggestedCCUParameters />
+    <RevisionHistory>
+      <Revision id="1.0">Initial version</Revision>
+    </RevisionHistory>
+    <Name>Xiaomi RTCGQ11LM</Name>
+    <CcuModel>PacketParserCCU</CcuModel>
+    <Producer></Producer>
+    <Model></Model>
+    <Description></Description>
+    <Module>
+      <Name>Xiaomi RTCGQ11LM</Name>
+      <Id>-1</Id>
+      <Model>PacketParserModuleMqtt</Model>
+      <DeviceProperties>
+        <InternalPollInterval>15000</InternalPollInterval>
+        <CustomVariables>[{"Name":"XiaomiRTCGQ11LM","ValueTypeId":2,"NumericValue":0,"StringValue":"0x00158d00036cd3e2"}]</CustomVariables>
+        <IpAddress>192.168.1.200</IpAddress>
+        <Port>1883</Port>
+        <RootTopic>zigbee2mqtt/#</RootTopic>
+      </DeviceProperties>
+      <Devices>
+        <Device>
+          <Name>Xiaomi RTCGQ11LM</Name>
+          <Model>PacketParserReedContact</Model>
+          <Id>-2</Id>
+          <DeviceProperties>
+            <DeviceType>1010</DeviceType>
+            <ReadScriptPacketParser># Simple HTTP Request:
+# VAR response := SENDHTTPREQUEST("/example/getValue");
+# IF response.IsSuccess
+#  VAR content := response.Content;
+#  VAR responseHeaders := response.Headers;
+#  RETURN(PARSEXML(content, "//element1/value1"));
+# ELSE
+#  ADDERROR(response.StatusCode + " (" + response.ReasonPhrase + ")");
+#  RETURN(NaN);
+# END
+#
+# Set Http request method, body and headers
+# VAR response := SENDHTTPREQUEST("/example/getValue", "GET", "some data", "header1:value1", "header2:value2", ...);
+# OR
+# VAR request := HTTPREQUEST("/example/getValue", "POST", "some data");
+# request.headers := { "header1:value1", "header2:value2", ...};
+# request.method := "GET";
+# request.data := null;
+# VAR response := SENDHTTPREQUEST(request);
+#
+#
+# Send TCP, UDP data:
+# VAR data1 := BYTECOLLECTION("0a bb ea df 01");
+# SENDDATA(data1);
+# VAR data2 := "{\"name\":\"John\", \"age\":32}";
+# SENDDATA(data2);
+# VAR data3 := TOBYTES("{\"name\":\"John\", \"age\":32}", "iso-8859-1");
+# SENDDATA(data3);
+# Process received TCP or UDP data and set device values in the Listener script
+#
+#
+# Download data from FTP:
+# FTPDOWNLOAD("filePath");</ReadScriptPacketParser>
+            <InternalPollInterval>2500</InternalPollInterval>
+            <CustomVariables>[{"Name":"battery","ValueTypeId":1,"NumericValue":0},{"Name":"voltage","ValueTypeId":1,"NumericValue":0},{"Name":"link","ValueTypeId":1,"NumericValue":0}]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser>[{"AttributeDefinition":{"Name":"Battery"},"ReadFormula":"IF(ISNAN(battery),\u0022-\u0022,battery\u002B\u0022%\u0022);"},{"AttributeDefinition":{"Name":"Voltage"},"ReadFormula":"IF(ISNAN(voltage),\u0022-\u0022,voltage\u002B\u0022mV\u0022);"},{"AttributeDefinition":{"Name":"LinkQuality"},"ReadFormula":"IF(ISNAN(link),\u0022-\u0022,link\u002B\u0022lqi\u0022);"}]</ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser>IF (COMPARE(RECEIVEDMSG.TOPIC, "zigbee2mqtt/"+ XiaomiRTCGQ11LM, CompareOptions.IgnoreCase) = 0)
+    VAR value := TOSTRING(PARSEJSON(RECEIVEDMSG.PAYLOAD, "occupancy")); 
+    IF (COMPARE(value, "true", CompareOptions.IgnoreCase) = 0)
+        Rc := 1; 
+    ELSEIF (COMPARE(value, "false", CompareOptions.IgnoreCase) = 0)
+        Rc := 0;
+    ELSE
+        Rc := NaN;
+    END   
+    battery := PARSEJSON(RECEIVEDMSG.PAYLOAD,"battery", true);
+    voltage := PARSEJSON(RECEIVEDMSG.PAYLOAD,"voltage", true);
+    link := PARSEJSON(RECEIVEDMSG.PAYLOAD,"linkquality", true);
+END;</ListenerScriptPacketParser>
+            <OnStateIconId>101</OnStateIconId>
+            <OffStateIconId>102</OffStateIconId>
+            <OnStateName>${general_motion_true}</OnStateName>
+            <OffStateName>${general_motion_false}</OffStateName>
+            <ReadStateScriptPacketParser></ReadStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+      </Devices>
+    </Module>
+  </Template>
+</Templates>
