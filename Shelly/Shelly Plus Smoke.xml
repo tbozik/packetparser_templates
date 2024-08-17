@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Templates format="2" protocolVersion="83">
+  <Template revision="1.0" id="06fd60ba-f926-4d1c-9c98-d0c18cc631b7">
+    <SuggestedCCUParameters />
+    <RevisionHistory>
+      <Revision id="1.0">Initial version</Revision>
+    </RevisionHistory>
+    <ImportParameters>
+		<Parameter>
+			<Name>${ipAddress}</Name>	
+			<Value>192.168.0.1</Value>
+			<Id>IpAddress</Id>
+		</Parameter>
+		<Parameter>
+			<Name>ID</Name>	
+			<Value>shellyplussmoke-xxxxxxxxxxxx</Value>
+			<Id>ID</Id>
+		</Parameter>        
+	</ImportParameters> 
+    <Name>Shelly Plus Smoke</Name>
+    <CcuModel>PacketParserCCU</CcuModel>
+    <Producer></Producer>
+    <Model></Model>
+    <Description></Description>
+    <Module>
+      <Name>Shelly Plus Smoke</Name>
+      <Id>-1</Id>
+      <Model>PacketParserModuleMqtt</Model>
+      <DeviceProperties>
+        <InternalPollInterval>6000</InternalPollInterval>
+        <CustomVariables>[{"Name":"deviceid","ValueTypeId":2,"NumericValue":0,"StringValue":"$[ID]"},{"Name":"battery_V","ValueTypeId":1,"NumericValue":0},{"Name":"battery_percent","ValueTypeId":1,"NumericValue":0},{"Name":"wakeup_period","ValueTypeId":1,"NumericValue":0}]</CustomVariables>
+        <IpAddress>$[IpAddress]</IpAddress>
+        <Port>1883</Port>
+        <RootTopic>#</RootTopic>
+      </DeviceProperties>
+      <Devices>
+        <Device>
+          <Name>Shelly Plus Smoke</Name>
+          <Model>PacketParserReedContact</Model>
+          <Id>-2</Id>
+          <DeviceProperties>
+            <DeviceType>1030</DeviceType>
+            <ReadScriptPacketParser>if wakeup_period = 0
+	# after init
+else
+	wakeup_period := wakeup_period - 60;
+	if wakeup_period = 0
+		wakeup_period := -1;
+	end
+end
+
+if wakeup_period &lt; 0
+	ADDWARNING("Update not received");
+end
+
+if wakeup_period &lt; -86400
+	ADDERROR("Update not received in last 48h");
+end</ReadScriptPacketParser>
+            <InternalPollInterval>60000</InternalPollInterval>
+            <CustomVariables>[]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser>[{"AttributeDefinition":{"Name":"Battery [%]"},"ReadFormula":"if battery_percent != 0\r\n\treturn(battery_percent);\r\nelse\r\n\treturn(NaN);\r\nend"},{"AttributeDefinition":{"Name":"Battery [V]"},"ReadFormula":"if battery_V != 0\r\n\treturn(battery_V);\r\nelse\r\n\treturn(NaN);\r\nend"}]</ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser>if RECEIVEDMSG.TOPIC = deviceid + "/events/rpc"
+	var method := parsejson(RECEIVEDMSG.PAYLOAD, "method", true); 
+	var params := parsejson(RECEIVEDMSG.PAYLOAD, "params", true);
+	if method = "NotifyFullStatus"
+		wakeup_period := parsejson(params, "sys.wakeup_period");
+		battery_V := parsejson(params, "devicepower:0.battery.V");
+		battery_percent := parsejson(params, "devicepower:0.battery.percent");
+	end
+	if method = "NotifyStatus" and !ISNULL(parsejson(params, "smoke:0", true))
+		var alarm := parsejson(params, "smoke:0.alarm", true);
+		if !ISNULL(alarm)
+			Rc := alarm;
+		end
+	end
+end
+
+if battery_percent &lt; 30
+	ADDWARNING("Low battery");
+end</ListenerScriptPacketParser>
+            <OnStateIconId>95</OnStateIconId>
+            <OffStateIconId>96</OffStateIconId>
+            <OnStateName>${Emergency_Alarm}</OnStateName>
+            <OffStateName>${Emergency_Ok}</OffStateName>
+            <ReadStateScriptPacketParser></ReadStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+      </Devices>
+    </Module>
+  </Template>
+</Templates>
