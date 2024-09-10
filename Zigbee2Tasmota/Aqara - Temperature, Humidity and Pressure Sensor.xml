@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Templates format="2" protocolVersion="83">
+  <Template revision="1.0" id="29e6a600-2f6f-4c59-850c-23dfd8f62d01">
+    <SuggestedCCUParameters />
+    <RevisionHistory>
+      <Revision id="1.0">Initial version</Revision>
+    </RevisionHistory>
+    <Name>Aqara - Temperature, Humidity and Pressure Sensor (Basi)</Name>
+    <CcuModel>PacketParserCCU</CcuModel>
+    <Producer></Producer>
+    <Model></Model>
+    <Description></Description>
+	<ImportParameters>
+	<Parameter>
+		<Name>Mqtt Broker ${ipAddress}</Name>	
+		<Value>192.168.0.1</Value>
+		<Id>IpAddress</Id>
+	</Parameter>
+	<Parameter>
+		<Name>Mqtt Broker port</Name>	
+		<Value>1883</Value>
+		<Id>Port</Id>
+	</Parameter>
+    <Parameter>
+        <Name>Device ID</Name>	
+        <Value>0xFFFF</Value>
+        <Id>deviceId</Id>
+    </Parameter>
+	</ImportParameters>      
+    <Module>
+      <Name>Aqara - Temperature, Humidity and Pressure Sensor (Basi)</Name>
+      <Id>-1</Id>
+      <Model>PacketParserModuleMqtt</Model>
+      <DeviceProperties>
+        <InternalPollInterval>5000</InternalPollInterval>
+        <CustomVariables>[{"Name":"GWname","ValueTypeId":2,"NumericValue":0,"StringValue":"tasmota_z2m"},{"Name":"ID","ValueTypeId":2,"NumericValue":0,"StringValue":"$[deviceId]"},{"Name":"BatteryVoltage","ValueTypeId":0,"NumericValue":0},{"Name":"BatteryPercentage","ValueTypeId":0,"NumericValue":0},{"Name":"LastSeenEpoch","ValueTypeId":0,"NumericValue":0}]</CustomVariables>
+        <ServiceAttributesScriptsPacketParser>[{"AttributeDefinition":{"Name":"IEEEAddr"},"ReadFormula":"MQTTPUBLISH(\u0022cmnd/\u0022 \u002B GWname\u002B \u0022/ZbInfo\u0022, ID)"},{"AttributeDefinition":{"Name":"ModelId"}},{"AttributeDefinition":{"Name":"Manufacturer"}},{"AttributeDefinition":{"Name":"Endpoints"}},{"AttributeDefinition":{"Name":"Config"}},{"AttributeDefinition":{"Name":"Link Quality"},"ReadFormula":""},{"AttributeDefinition":{"Name":"Battery Voltage"},"ReadFormula":"BatteryVoltage \u002B \u0022 V\u0022"},{"AttributeDefinition":{"Name":"Battery Percentage"},"ReadFormula":"BatteryPercentage \u002B \u0022%\u0022"}]</ServiceAttributesScriptsPacketParser>
+        <ListenerScriptPacketParser>if INDEXOF(RECEIVEDMSG.Topic, "SENSOR") &gt; 0
+	var ZbReceived := PARSEJSON(RECEIVEDMSG.Payload, "ZbReceived." + ID, true);
+    var bat := PARSEJSON(ZbReceived, "BatteryPercentage", true);
+    if(!ISNULL(bat), BatteryPercentage := bat);
+    var volt := PARSEJSON(ZbReceived, "BatteryVoltage", true);
+    if(!ISNULL(volt), BatteryVoltage := volt);
+    
+    var deviceInfo := PARSEJSON(RECEIVEDMSG.Payload, "ZbInfo." + ID, true);
+    if !ISNULL(deviceInfo)
+    	LastSeenEpoch := PARSEJSON(deviceInfo, "LastSeenEpoch");
+        COMPLETESERVICEATTRIBUTE("IEEEAddr", PARSEJSON(deviceInfo, "IEEEAddr"));
+        COMPLETESERVICEATTRIBUTE("ModelId", PARSEJSON(deviceInfo, "ModelId"));
+        COMPLETESERVICEATTRIBUTE("Manufacturer", PARSEJSON(deviceInfo, "Manufacturer"));
+        COMPLETESERVICEATTRIBUTE("Endpoints", PARSEJSON(deviceInfo, "Endpoints"));
+        COMPLETESERVICEATTRIBUTE("Config", PARSEJSON(deviceInfo, "Config"));
+        COMPLETESERVICEATTRIBUTE("Link Quality", ROUND(LINEAR(PARSEJSON(deviceInfo, "LinkQuality"), 0,0, 254, 100)) + "%");
+    end
+end
+
+if BatteryPercentage &lt; 30
+	ADDWARNING("Low battery (&lt;30%)");
+end
+
+DATETIME now := NOW();
+if !ISNAN(LastSeenEpoch)
+	var secondsSeen := now.UNIXTIME - LastSeenEpoch;
+	if secondsSeen &gt; 24 * 60 * 60
+		if secondsSeen &gt; 12 * 60 * 60
+			ADDWARNING("Device is offline &gt; 12H");
+		else
+			ADDERROR("Device is offline &gt; 24H");
+		end
+	end
+else
+	LastSeenEpoch := now.UNIXTIME;
+end</ListenerScriptPacketParser>
+        <IpAddress>192.168.1.100</IpAddress>
+        <Port>1883</Port>
+        <RootTopic>tele/tasmota_z2m/#</RootTopic>
+      </DeviceProperties>
+      <Devices>
+        <Device>
+          <Name>${device_variable_pressure}</Name>
+          <Model>PacketParserVariable</Model>
+          <Id>-2</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <SerializedValueLogTypeConversions>{"25":"{\u0022ValueLogTypeConversionTypeId\u0022:3,\u0022SerializedValueLogTypeConversion\u0022:\u0022{\\u0022Value1OnInput\\u0022:0,\\u0022Value1OnOutput\\u0022:0,\\u0022Value2OnInput\\u0022:1,\\u0022Value2OnOutput\\u0022:1,\\u0022SourceValueLogTypes\\u0022:[62],\\u0022TargetValueLogType\\u0022:25}\u0022}"}</SerializedValueLogTypeConversions>
+            <ReadScriptPacketParser></ReadScriptPacketParser>
+            <InternalPollInterval>15000</InternalPollInterval>
+            <CustomVariables />
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser>if INDEXOF(RECEIVEDMSG.Topic, "SENSOR") &gt; 0
+    var val := PARSEJSON(RECEIVEDMSG.Payload, "ZbReceived." + ID + ".Pressure", true);
+    if(!ISNULL(val), Va := val);
+end</ListenerScriptPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <IsReadOnly>False</IsReadOnly>
+            <ReadStateScriptPacketParser />
+            <WriteStateScriptPacketParser></WriteStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>${temperature_air}</Name>
+          <Model>PacketParserTemperatureSensor</Model>
+          <Id>-3</Id>
+          <DeviceProperties>
+            <DeviceType>3001</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>15000</InternalPollInterval>
+            <CustomVariables />
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser>if INDEXOF(RECEIVEDMSG.Topic, "SENSOR") &gt; 0
+    var temp := PARSEJSON(RECEIVEDMSG.Payload, "ZbReceived." + ID + ".Temperature", true);
+    var hum := PARSEJSON(RECEIVEDMSG.Payload, "ZbReceived." + ID + ".Humidity", true);
+    if (!ISNULL(temp), Te := temp);
+    if (!ISNULL(hum), Hu := hum/ 100);
+end</ListenerScriptPacketParser>
+            <ReadTemperatureScriptPacketParser></ReadTemperatureScriptPacketParser>
+            <ReadHumidityScriptPacketParser></ReadHumidityScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+      </Devices>
+    </Module>
+  </Template>
+</Templates>

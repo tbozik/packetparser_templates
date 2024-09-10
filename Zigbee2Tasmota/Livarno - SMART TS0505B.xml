@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Templates format="2" protocolVersion="83">
+  <Template revision="1.0" id="50de1ede-0713-45ca-a5d2-be6e82bc75e7">
+    <SuggestedCCUParameters />
+    <RevisionHistory>
+      <Revision id="1.0">Initial version</Revision>
+    </RevisionHistory>
+    <Name>Livarno - SMART TS0505B</Name>
+    <CcuModel>PacketParserCCU</CcuModel>
+    <Producer></Producer>
+    <Model></Model>
+    <Description></Description>
+	<ImportParameters>
+	<Parameter>
+		<Name>Mqtt Broker ${ipAddress}</Name>	
+		<Value>192.168.0.1</Value>
+		<Id>IpAddress</Id>
+	</Parameter>
+	<Parameter>
+		<Name>Mqtt Broker port</Name>	
+		<Value>1883</Value>
+		<Id>Port</Id>
+	</Parameter>
+    <Parameter>
+        <Name>Device ID</Name>	
+        <Value>0xFFFF</Value>
+        <Id>deviceId</Id>
+    </Parameter>
+	</ImportParameters>      
+    <Module>
+      <Name>Livarno SMART TS0505B</Name>
+      <Id>-1</Id>
+      <Model>PacketParserModuleMqtt</Model>
+      <DeviceProperties>
+        <InternalPollInterval>5000</InternalPollInterval>
+        <CustomVariables>[{"Name":"GWname","ValueTypeId":2,"NumericValue":0,"StringValue":"tasmota_z2m"},{"Name":"ID","ValueTypeId":2,"NumericValue":0,"StringValue":"$[deviceId]"},{"Name":"LinkQuality","ValueTypeId":1,"NumericValue":0},{"Name":"lastBr","ValueTypeId":1,"NumericValue":0}]</CustomVariables>
+        <ServiceAttributesScriptsPacketParser>[{"AttributeDefinition":{"Name":"IEEEAddr"},"ReadFormula":"MQTTPUBLISH(\u0022cmnd/\u0022 \u002B GWname\u002B \u0022/ZbInfo\u0022, ID)"}]</ServiceAttributesScriptsPacketParser>
+        <ListenerScriptPacketParser>if INDEXOF(RECEIVEDMSG.Topic, "SENSOR") &gt; 0
+	var ZbReceived := PARSEJSON(TOSTRING(RECEIVEDMSG.Payload), "ZbReceived." + ID, true);
+    var val := PARSEJSON(ZbReceived, ".LinkQuality", true);
+    if(!ISNULL(val), LinkQuality := val);
+    
+    var deviceInfo := PARSEJSON(TOSTRING(RECEIVEDMSG.Payload), "ZbInfo." + ID, true);
+    if !ISNULL(deviceInfo)
+        COMPLETESERVICEATTRIBUTE("IEEEAddr", PARSEJSON(deviceInfo, "IEEEAddr"));
+        COMPLETESERVICEATTRIBUTE("ModelId", PARSEJSON(deviceInfo, "ModelId"));
+        COMPLETESERVICEATTRIBUTE("Manufacturer", PARSEJSON(deviceInfo, "Manufacturer"));
+        COMPLETESERVICEATTRIBUTE("Endpoints", PARSEJSON(deviceInfo, "Endpoints"));
+        COMPLETESERVICEATTRIBUTE("Config", PARSEJSON(deviceInfo, "Config"));
+    end
+end</ListenerScriptPacketParser>
+        <IpAddress>192.168.1.100</IpAddress>
+        <Port>1883</Port>
+        <WriteScriptPacketParser>if St = 0 or Hb &lt; 0.01
+    MQTTPUBLISH("cmnd/" + GWname+ "/ZbSend", 
+    "{\"device\":\" " + ID + 
+    "\",\"send\":{\"Power\":false}}");
+else
+    MQTTPUBLISH("cmnd/" + GWname+ "/ZbSend", 
+    "{\"device\":\" " + ID + 
+    "\",\"send\":{\"Dimmer\":" + round(linear(Hb, 0.01, 1, 1, 254)) + "}}");
+    
+    if !isnan(Ct)
+        MQTTPUBLISH("cmnd/" + GWname+ "/ZbSend", 
+        "{\"device\":\" " + ID + 
+        "\",\"send\":{\"CT\":" + round(1000000/Ct) + "}}");
+    else
+        MQTTPUBLISH("cmnd/" + GWname+ "/ZbSend", 
+        "{\"device\":\" " + ID + 
+        "\",\"send\":{\"HueSat\":\"" + round(linear(Hd, 0, 0, 360, 254)) + "," + floor(linear(Sa, 0, 0, 1, 254)) + "\"}}");
+    end
+
+    #    MQTTPUBLISH("cmnd/" + GWname+ "/ZbSend", 
+    #"{\"device\":\" " + ID + 
+    #"\",\"send\":{\"Power\":true}}");
+end
+</WriteScriptPacketParser>
+        <RootTopic>tele/tasmota_z2m/#</RootTopic>
+        <DeviceVariables>[{"DeviceId":-2,"ValueLogType":65,"Abbreviation":"Hb","ValueLogTypeFlavourId":1},{"DeviceId":-2,"ValueLogType":68,"Abbreviation":"Hv","ValueLogTypeFlavourId":1},{"DeviceId":-2,"ValueLogType":48,"Abbreviation":"St","ValueLogTypeFlavourId":1},{"DeviceId":-2,"ValueLogType":40,"Abbreviation":"Hd","ValueLogTypeFlavourId":1},{"DeviceId":-2,"ValueLogType":89,"Abbreviation":"Ct","ValueLogTypeFlavourId":1},{"DeviceId":-2,"ValueLogType":41,"Abbreviation":"Sa","ValueLogTypeFlavourId":1}]</DeviceVariables>
+      </DeviceProperties>
+      <Devices>
+        <Device>
+          <Name>${dashboard_deviceRGBLight}</Name>
+          <Model>PacketParserHSBLight</Model>
+          <Id>-2</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser></ReadScriptPacketParser>
+            <InternalPollInterval>2500</InternalPollInterval>
+            <CustomVariables>[]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser>VAR json := tostring(RECEIVEDMSG.Payload);
+VAR topic := RECEIVEDMSG.Topic;
+
+if INDEXOF(topic, "SENSOR") &gt; 0 and INDEXOF(json, "null") &lt; 0
+    var power := PARSEJSON(json, "ZbReceived." + ID + ".Power", true);
+    if(!ISNULL(power), St := power);
+    var brightness := PARSEJSON(json, "ZbReceived." + ID + ".Dimmer", true);
+    if(!ISNULL(brightness), Hb := round(linear(brightness, 1, 1, 254, 100))/100);
+    var cmode := PARSEJSON(json, "ZbReceived." + ID + ".ColorMode", true);
+    # CT
+    if cmode = 2
+        var ctemp := PARSEJSON(json, "ZbReceived." + ID + ".CT", true);
+        if !ISNULL(ctemp)
+            var oldCT := round(1000000/Ct);
+            if oldCT != ctemp
+                Ct := round(1000000/ctemp);
+            end
+        end
+    end
+    # HSB
+    if cmode = 0
+        var hue := PARSEJSON(json, "ZbReceived." + ID + ".Hue", true);
+        if(!ISNULL(hue), Hd := round(linear(hue, 0, 0, 254, 360)));
+        var sat := PARSEJSON(json, "ZbReceived." + ID + ".Sat", true);
+        if(!ISNULL(sat), Sa := ceil(linear(sat, 0, 0, 254, 100))/100);
+    end
+end
+</ListenerScriptPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <ReadHueScriptPacketParser></ReadHueScriptPacketParser>
+            <ReadSaturationScriptPacketParser></ReadSaturationScriptPacketParser>
+            <ReadBrightnessScriptPacketParser></ReadBrightnessScriptPacketParser>
+            <ReadCCTScriptPacketParser></ReadCCTScriptPacketParser>
+            <WriteHueScriptPacketParser></WriteHueScriptPacketParser>
+            <WriteSaturationScriptPacketParser></WriteSaturationScriptPacketParser>
+            <WriteBrightnessScriptPacketParser></WriteBrightnessScriptPacketParser>
+            <WriteCCTScriptPacketParser></WriteCCTScriptPacketParser>
+            <IconId>0</IconId>
+            <MinColorTemperature>2000</MinColorTemperature>
+            <MaxColorTemperature>6536</MaxColorTemperature>
+          </DeviceProperties>
+        </Device>
+      </Devices>
+    </Module>
+  </Template>
+</Templates>

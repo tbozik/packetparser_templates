@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Templates format="2" protocolVersion="83">
+  <Template revision="1.0" id="7df1e361-2522-4f7f-8dc0-83bb3c7894d5">
+    <SuggestedCCUParameters />
+    <RevisionHistory>
+      <Revision id="1.0">Initial version</Revision>
+    </RevisionHistory>
+    <Name>IKEA - TRADFRI - E1810</Name>
+    <CcuModel>PacketParserCCU</CcuModel>
+    <Producer></Producer>
+    <Model></Model>
+    <Description></Description>
+	<ImportParameters>
+	<Parameter>
+		<Name>Mqtt Broker ${ipAddress}</Name>	
+		<Value>192.168.0.1</Value>
+		<Id>IpAddress</Id>
+	</Parameter>
+	<Parameter>
+		<Name>Mqtt Broker port</Name>	
+		<Value>1883</Value>
+		<Id>Port</Id>
+	</Parameter>
+    <Parameter>
+        <Name>Device ID</Name>	
+        <Value>0xFFFF</Value>
+        <Id>deviceId</Id>
+    </Parameter>
+	</ImportParameters>      
+    <Module>
+      <Name>IKEA - TRADFRI - E1810</Name>
+      <Id>-1</Id>
+      <Model>PacketParserModuleMqtt</Model>
+      <DeviceProperties>
+        <InternalPollInterval>5000</InternalPollInterval>
+        <CustomVariables>[{"Name":"GWname","ValueTypeId":2,"NumericValue":0,"StringValue":"tasmota_z2m"},{"Name":"ID","ValueTypeId":2,"NumericValue":0,"StringValue":"$[deviceId]"},{"Name":"BatteryVoltage","ValueTypeId":0,"NumericValue":0},{"Name":"BatteryPercentage","ValueTypeId":0,"NumericValue":0},{"Name":"LastSeenEpoch","ValueTypeId":0,"NumericValue":0}]</CustomVariables>
+        <ServiceAttributesScriptsPacketParser>[{"AttributeDefinition":{"Name":"IEEEAddr"},"ReadFormula":"MQTTPUBLISH(\u0022cmnd/\u0022 \u002B GWname\u002B \u0022/ZbInfo\u0022, ID)"},{"AttributeDefinition":{"Name":"ModelId"}},{"AttributeDefinition":{"Name":"Manufacturer"}},{"AttributeDefinition":{"Name":"Endpoints"}},{"AttributeDefinition":{"Name":"Link Quality"}},{"AttributeDefinition":{"Name":"Battery Voltage"},"ReadFormula":"BatteryVoltage \u002B \u0022 V\u0022"},{"AttributeDefinition":{"Name":"Battery Percentage"},"ReadFormula":"BatteryPercentage \u002B \u0022%\u0022"}]</ServiceAttributesScriptsPacketParser>
+        <ListenerScriptPacketParser>if INDEXOF(RECEIVEDMSG.Topic, "SENSOR") &gt; 0
+	var ZbReceived := PARSEJSON(TOSTRING(RECEIVEDMSG.Payload), "ZbReceived." + ID, true);
+    var bat := PARSEJSON(ZbReceived, "BatteryPercentage", true);
+    if(!ISNULL(bat), BatteryPercentage := bat);
+    var volt := PARSEJSON(ZbReceived, "BatteryVoltage", true);
+    if(!ISNULL(volt), BatteryVoltage := volt);
+    
+    var deviceInfo := PARSEJSON(TOSTRING(RECEIVEDMSG.Payload), "ZbInfo." + ID, true);
+    if !ISNULL(deviceInfo)
+    	LastSeenEpoch := PARSEJSON(deviceInfo, "LastSeenEpoch");
+        COMPLETESERVICEATTRIBUTE("IEEEAddr", PARSEJSON(deviceInfo, "IEEEAddr"));
+        COMPLETESERVICEATTRIBUTE("ModelId", PARSEJSON(deviceInfo, "ModelId"));
+        COMPLETESERVICEATTRIBUTE("Manufacturer", PARSEJSON(deviceInfo, "Manufacturer"));
+        COMPLETESERVICEATTRIBUTE("Endpoints", PARSEJSON(deviceInfo, "Endpoints"));
+        #COMPLETESERVICEATTRIBUTE("Config", PARSEJSON(deviceInfo, "Config"));
+        COMPLETESERVICEATTRIBUTE("Link Quality", ROUND(LINEAR(PARSEJSON(deviceInfo, "LinkQuality"), 0,0, 254, 100)) + "%");
+    end
+end
+
+if BatteryPercentage &lt; 30
+	ADDWARNING("Low battery (&lt;30%)");
+end
+
+if !ISNAN(LastSeenEpoch)
+	DATETIME now := NOW();
+	var secondsSeen := now.UNIXTIME - LastSeenEpoch;
+	if secondsSeen &gt; 24 * 60 * 60
+		if secondsSeen &gt; 12 * 60 * 60
+			ADDINFO("Device is offline &gt; 12H");
+		else
+			ADDINFO("Device is offline &gt; 24H");
+		end
+	end
+end</ListenerScriptPacketParser>
+        <IpAddress>192.168.1.100</IpAddress>
+        <Port>1883</Port>
+        <RootTopic>tele/tasmota_z2m/#</RootTopic>
+      </DeviceProperties>
+      <Devices>
+        <Device>
+          <Name>Dimmer Down</Name>
+          <Model>PacketParserPushButton</Model>
+          <Id>-2</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>10000</InternalPollInterval>
+            <CustomVariables />
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser>Bp := 0;
+if INDEXOF(RECEIVEDMSG.Topic, "SENSOR") &gt; 0
+	var ZbReceived := PARSEJSON(RECEIVEDMSG.Payload, "ZbReceived." + ID, true);
+    var button := PARSEJSON(ZbReceived, "DimmerStepDown", true);
+    if(!ISNULL(button), Bp := 1);
+end
+</ListenerScriptPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <ReadButtonPressedStateScriptPacketParser></ReadButtonPressedStateScriptPacketParser>
+            <WriteButtonPressedStateScriptPacketParser></WriteButtonPressedStateScriptPacketParser>
+            <IconId>86</IconId>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>Dimmer Up</Name>
+          <Model>PacketParserPushButton</Model>
+          <Id>-3</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>10000</InternalPollInterval>
+            <CustomVariables />
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser>Bp := 0;
+if INDEXOF(RECEIVEDMSG.Topic, "SENSOR") &gt; 0
+	var ZbReceived := PARSEJSON(RECEIVEDMSG.Payload, "ZbReceived." + ID, true);
+    var button := PARSEJSON(ZbReceived, "DimmerUp", true);
+    if(!ISNULL(button), Bp := 1);
+end</ListenerScriptPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <ReadButtonPressedStateScriptPacketParser></ReadButtonPressedStateScriptPacketParser>
+            <WriteButtonPressedStateScriptPacketParser></WriteButtonPressedStateScriptPacketParser>
+            <IconId>86</IconId>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>Left</Name>
+          <Model>PacketParserPushButton</Model>
+          <Id>-4</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>10000</InternalPollInterval>
+            <CustomVariables />
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser>Bp := 0;
+if INDEXOF(RECEIVEDMSG.Topic, "SENSOR") &gt; 0
+	var ZbReceived := PARSEJSON(RECEIVEDMSG.Payload, "ZbReceived." + ID, true);
+    var button := PARSEJSON(ZbReceived, "ArrowClick", true);
+    if(!ISNULL(button) and button = 1, Bp := 1);
+end</ListenerScriptPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <ReadButtonPressedStateScriptPacketParser></ReadButtonPressedStateScriptPacketParser>
+            <WriteButtonPressedStateScriptPacketParser></WriteButtonPressedStateScriptPacketParser>
+            <IconId>86</IconId>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>Right</Name>
+          <Model>PacketParserPushButton</Model>
+          <Id>-5</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>10000</InternalPollInterval>
+            <CustomVariables />
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser>Bp := 0;
+if INDEXOF(RECEIVEDMSG.Topic, "SENSOR") &gt; 0
+	var ZbReceived := PARSEJSON(RECEIVEDMSG.Payload, "ZbReceived." + ID, true);
+    var button := PARSEJSON(ZbReceived, "ArrowClick", true);
+    if(!ISNULL(button) and button = 0, Bp := 1);
+end</ListenerScriptPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <ReadButtonPressedStateScriptPacketParser></ReadButtonPressedStateScriptPacketParser>
+            <WriteButtonPressedStateScriptPacketParser></WriteButtonPressedStateScriptPacketParser>
+            <IconId>86</IconId>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>Toggle</Name>
+          <Model>PacketParserPushButton</Model>
+          <Id>-6</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>10000</InternalPollInterval>
+            <CustomVariables />
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser>Bp := 0;
+if INDEXOF(RECEIVEDMSG.Topic, "SENSOR") &gt; 0
+	var ZbReceived := PARSEJSON(RECEIVEDMSG.Payload, "ZbReceived." + ID, true);
+    var button := PARSEJSON(ZbReceived, "Power", true);
+    if(!ISNULL(button), Bp := 1);
+end</ListenerScriptPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <ReadButtonPressedStateScriptPacketParser></ReadButtonPressedStateScriptPacketParser>
+            <WriteButtonPressedStateScriptPacketParser></WriteButtonPressedStateScriptPacketParser>
+            <IconId>86</IconId>
+          </DeviceProperties>
+        </Device>
+      </Devices>
+    </Module>
+  </Template>
+</Templates>

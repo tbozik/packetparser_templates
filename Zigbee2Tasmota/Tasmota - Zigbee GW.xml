@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Templates format="2" protocolVersion="83">
+  <Template revision="1.0" id="3bae8c56-58c1-46da-8e65-725eaebd6e9c">
+    <SuggestedCCUParameters />
+    <RevisionHistory>
+      <Revision id="1.0">Initial version</Revision>
+    </RevisionHistory>
+    <Name>Tasmota - Zigbee GW</Name>
+    <CcuModel>PacketParserCCU</CcuModel>
+    <Producer></Producer>
+    <Model></Model>
+    <Description></Description>
+	<ImportParameters>
+	<Parameter>
+		<Name>Mqtt Broker ${ipAddress}</Name>	
+		<Value>192.168.0.1</Value>
+		<Id>IpAddress</Id>
+	</Parameter>
+	<Parameter>
+		<Name>Mqtt Broker port</Name>	
+		<Value>1883</Value>
+		<Id>Port</Id>
+	</Parameter>
+	</ImportParameters>    
+    <Module>
+      <Name>Tasmota - Zigbee GW</Name>
+      <Id>-1</Id>
+      <Model>PacketParserModuleMqtt</Model>
+      <DeviceProperties>
+        <ReadScriptPacketParser>MQTTPUBLISH("cmnd/" + GWname+ "/ZbInfo", "");</ReadScriptPacketParser>
+        <InternalPollInterval>3600000</InternalPollInterval>
+        <CustomVariables>[{"Name":"GWname","ValueTypeId":2,"NumericValue":0,"StringValue":"tasmota_z2m"},{"Name":"count","ValueTypeId":0,"NumericValue":0},{"Name":"new","ValueTypeId":2,"NumericValue":0,"StringValue":""},{"Name":"ID","ValueTypeId":2,"NumericValue":0,"StringValue":""}]</CustomVariables>
+        <ServiceAttributesScriptsPacketParser>[{"AttributeDefinition":{"Name":"New devices"},"ReadFormula":"new"}]</ServiceAttributesScriptsPacketParser>
+        <ListenerScriptPacketParser>if INDEXOF(RECEIVEDMSG.Topic, "SENSOR") &gt; 0
+    var ModelId := PARSEJSON(RECEIVEDMSG.Payload, "ZbReceived." + ID + ".ModelId", true);
+    var Manufacturer := PARSEJSON(RECEIVEDMSG.Payload, "ZbReceived." + ID + ".Manufacturer", true);
+    if !ISNULL(Manufacturer) and !ISNULL(ModelId)
+    	new := new + ID + " - " + Manufacturer + " (" + ModelId + ")";
+    	ID := "";
+    	count := count +1;
+    end
+end
+
+if INDEXOF(RECEIVEDMSG.Topic, "RESULT") &gt; 0
+	if PARSEJSON(RECEIVEDMSG.Payload, "$.ZbState.JoinStatus", true) = 1
+		ID := PARSEJSON(RECEIVEDMSG.Payload, "$.ZbState.ShortAddr");
+	end
+end</ListenerScriptPacketParser>
+        <IpAddress>192.168.1.100</IpAddress>
+        <Port>1883</Port>
+        <WriteScriptPacketParser>if (St = 0, count := NaN, if (isnan(count), count := 0) )
+	</WriteScriptPacketParser>
+        <RootTopic>tele/tasmota_z2m/#</RootTopic>
+        <DeviceVariables>[{"DeviceId":-3,"ValueLogType":48,"Abbreviation":"St","ValueLogTypeFlavourId":1}]</DeviceVariables>
+      </DeviceProperties>
+      <Devices>
+        <Device>
+          <Name>Devices Found</Name>
+          <Model>PacketParserVariable</Model>
+          <Id>-2</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <SerializedValueLogTypeConversions />
+            <ReadScriptPacketParser></ReadScriptPacketParser>
+            <InternalPollInterval>1000</InternalPollInterval>
+            <CustomVariables>[]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser>[{"AttributeDefinition":{"Name":"New devices"},"ReadFormula":"new"}]</ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser></ListenerScriptPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <IsReadOnly>True</IsReadOnly>
+            <ReadStateScriptPacketParser>Va := count</ReadStateScriptPacketParser>
+            <WriteStateScriptPacketParser></WriteStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>Permit Join</Name>
+          <Model>PacketParserSwitch</Model>
+          <Id>-3</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>2500</InternalPollInterval>
+            <CustomVariables />
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser>if INDEXOF(RECEIVEDMSG.Topic, "RESULT") &gt; 0
+    var Status := PARSEJSON(RECEIVEDMSG.Payload, "ZbState.Status", true);
+    if Status = 20
+        St := 0;
+    elseif Status = 21
+        St := 1;
+    end
+end
+
+if (St = 0, count := NaN, if (isnan(count), count := 0) )</ListenerScriptPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <NegateState>False</NegateState>
+            <OnStateIconId>19</OnStateIconId>
+            <OffStateIconId>61</OffStateIconId>
+            <OnStateName>${general_on}</OnStateName>
+            <OffStateName>${general_off}</OffStateName>
+            <ReadSwitchStateScriptPacketParser></ReadSwitchStateScriptPacketParser>
+            <WriteSwitchStateScriptPacketParser>if St = 1
+	MQTTPUBLISH("cmnd/" + GWname+ "/ZbInfo", "");
+	new := "";
+	ID := "";
+end
+
+MQTTPUBLISH("cmnd/" + GWname+ "/ZbPermitJoin", tostring(St));</WriteSwitchStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+      </Devices>
+    </Module>
+  </Template>
+</Templates>
