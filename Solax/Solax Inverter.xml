@@ -31,20 +31,24 @@
       <DeviceProperties>
         <ReadScriptPacketParser>var response := sendhttprequest("/proxy/api/getRealtimeInfo.do?tokenId="+tokenID+"&amp;sn="+sn);
 
-json := parsejson(response.Content, "result", 1);
-
-var statusCode := parsejson(json,"inverterStatus");
-if statusCode = "100"
-  addwarning("Inverter in waiting - Check DC");
-end
-if statusCode =  "103"
-  adderror("Inverter in fault mode");
-end
-if statusCode = "104"
-  adderror("Inverter in permanent fault mode");
-end
-if statusCode = "110"
-  addwarning("Inverter in standby mode");
+if parsejson(response.Content, "success")
+	json := parsejson(response.Content, "result", 1);
+	
+	var statusCode := parsejson(json,"inverterStatus");
+	if statusCode = "100"
+	  addwarning("Inverter in waiting - Check DC");
+	end
+	if statusCode =  "103"
+	  adderror("Inverter in fault mode");
+	end
+	if statusCode = "104"
+	  adderror("Inverter in permanent fault mode");
+	end
+	if statusCode = "110"
+	  addwarning("Inverter in standby mode");
+	end
+else
+ 	adderror(parsejson(response.Content, "exception"));
 end</ReadScriptPacketParser>
         <InternalPollInterval>20000</InternalPollInterval>
         <CustomVariables>[{"Name":"json","ValueTypeId":2,"NumericValue":0,"StringValue":"0"},{"Name":"tokenID","ValueTypeId":2,"NumericValue":0,"StringValue":"$[tokenID]"},{"Name":"sn","ValueTypeId":2,"NumericValue":0,"StringValue":"$[sn]"}]</CustomVariables>
