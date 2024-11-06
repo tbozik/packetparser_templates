@@ -1,0 +1,329 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Templates format="2" protocolVersion="86"">
+  <Template revision="1.0" id="ba70cb0c-2a89-4edd-bf84-4d00438b6e9b">
+    <SuggestedCCUParameters />
+    <RevisionHistory>
+      <Revision id="1.0">Initial version</Revision>
+    </RevisionHistory>
+    <ImportParameters>
+        <Parameter>
+            <Name>${ipAddress}</Name>
+            <Value>192.168.0.1</Value>
+            <Id>IpAddress</Id>
+        </Parameter>
+    </ImportParameters>    
+    <Name>Bluesound</Name>
+    <CcuModel>PacketParserCCU</CcuModel>
+    <Producer></Producer>
+    <Model></Model>
+    <Description></Description>
+    <Module>
+      <Name>Bluesound</Name>
+      <Id>-1</Id>
+      <Model>PacketParserModuleHttp</Model>
+      <DeviceProperties>
+        <ReadScriptPacketParser>var response := SENDHTTPREQUEST("/Status");
+shuffle := PARSEXML(response.Content, "//shuffle");
+repeat := PARSEXML(response.Content, "//repeat");</ReadScriptPacketParser>
+        <InternalPollInterval>30000</InternalPollInterval>
+        <CustomVariables>[{"Name":"shuffle","ValueTypeId":1,"NumericValue":0},{"Name":"repeat","ValueTypeId":1,"NumericValue":0}]</CustomVariables>
+        <IpAddress>$[IpAddress]</IpAddress>
+        <Port>11000</Port>
+        <UseHttps>False</UseHttps>
+      </DeviceProperties>
+      <Devices>
+        <Device>
+          <Name>${smartrule_action_multivalueswitch_nextvalue}</Name>
+          <Model>PacketParserPushButton</Model>
+          <Id>-2</Id>
+          <DeviceProperties>
+            <DeviceType>4006</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>10000</InternalPollInterval>
+            <CustomVariables />
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <ReadButtonPressedStateScriptPacketParser></ReadButtonPressedStateScriptPacketParser>
+            <WriteButtonPressedStateScriptPacketParser>SENDHTTPREQUEST("/Skip");</WriteButtonPressedStateScriptPacketParser>
+            <IconId>212</IconId>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>${volume}</Name>
+          <Model>PacketParserDimmer</Model>
+          <Id>-3</Id>
+          <DeviceProperties>
+            <DeviceType>2012</DeviceType>
+            <ReadScriptPacketParser></ReadScriptPacketParser>
+            <InternalPollInterval>2500</InternalPollInterval>
+            <CustomVariables />
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <ReadLevelScriptPacketParser>var response := SENDHTTPREQUEST("/Volume");
+PARSEXML(response.Content, "//volume") / 100;</ReadLevelScriptPacketParser>
+            <WriteLevelScriptPacketParser>if St
+	SENDHTTPREQUEST("/Volume?level=" + round(Le*100) + "&amp;tell_slaves=1");
+else
+	SENDHTTPREQUEST("/Volume?mute=1&amp;tell_slaves=1");
+end</WriteLevelScriptPacketParser>
+            <IconId>3008</IconId>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>${shuffle}</Name>
+          <Model>PacketParserSwitch</Model>
+          <Id>-4</Id>
+          <DeviceProperties>
+            <DeviceType>135</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>2500</InternalPollInterval>
+            <CustomVariables />
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <NegateState>False</NegateState>
+            <OnStateIconId>216</OnStateIconId>
+            <OffStateIconId>217</OffStateIconId>
+            <OnStateName>${shuffle}</OnStateName>
+            <OffStateName>${noShuffle}</OffStateName>
+            <ReadSwitchStateScriptPacketParser>shuffle</ReadSwitchStateScriptPacketParser>
+            <WriteSwitchStateScriptPacketParser>var response := SENDHTTPREQUEST("/Shuffle?state=" + St);
+shuffle := PARSEXML(response.Content, "//playlist/@shuffle");</WriteSwitchStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>${repeat}</Name>
+          <Model>PacketParserMultiValueSwitch</Model>
+          <Id>-5</Id>
+          <DeviceProperties>
+            <DeviceType>6101</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>2500</InternalPollInterval>
+            <CustomVariables />
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>True</ShouldDoPeriodicWrite>
+            <Value0Index>0</Value0Index>
+            <Value1Index>1</Value1Index>
+            <Value2Index>2</Value2Index>
+            <Value3Index>67</Value3Index>
+            <Value4Index>68</Value4Index>
+            <Value5Index>69</Value5Index>
+            <Value6Index>70</Value6Index>
+            <Value7Index>71</Value7Index>
+            <Value8Index>72</Value8Index>
+            <Value9Index>73</Value9Index>
+            <Value0Name>${noRepeat}</Value0Name>
+            <Value1Name>${repeat_one}</Value1Name>
+            <Value2Name>${repeat_all}</Value2Name>
+            <Value3Name></Value3Name>
+            <Value4Name></Value4Name>
+            <Value5Name></Value5Name>
+            <Value6Name></Value6Name>
+            <Value7Name></Value7Name>
+            <Value8Name></Value8Name>
+            <Value9Name></Value9Name>
+            <Value0IconId>210</Value0IconId>
+            <Value1IconId>209</Value1IconId>
+            <Value2IconId>209</Value2IconId>
+            <Value3IconId>0</Value3IconId>
+            <Value4IconId>0</Value4IconId>
+            <Value5IconId>0</Value5IconId>
+            <Value6IconId>0</Value6IconId>
+            <Value7IconId>0</Value7IconId>
+            <Value8IconId>0</Value8IconId>
+            <Value9IconId>0</Value9IconId>
+            <OffStateValue>0</OffStateValue>
+            <ReadSwitchStateScriptPacketParser>switch(repeat,0,2,1,1,0)</ReadSwitchStateScriptPacketParser>
+            <WriteSwitchStateScriptPacketParser>var tmp := switch(Mu,0,2,1,1,0);
+var response := SENDHTTPREQUEST("/Repeat?state=" + switch(Mu,0,2,1,1,0));
+repeat := PARSEXML(response.Content, "//playlist/@repeat");</WriteSwitchStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>${general_pause}</Name>
+          <Model>PacketParserPushButton</Model>
+          <Id>-6</Id>
+          <DeviceProperties>
+            <DeviceType>4004</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>10000</InternalPollInterval>
+            <CustomVariables />
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <ReadButtonPressedStateScriptPacketParser></ReadButtonPressedStateScriptPacketParser>
+            <WriteButtonPressedStateScriptPacketParser>SENDHTTPREQUEST("/Pause?toggle=1");</WriteButtonPressedStateScriptPacketParser>
+            <IconId>214</IconId>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>${smartrule_action_multivalueswitch_previousvalue}</Name>
+          <Model>PacketParserPushButton</Model>
+          <Id>-7</Id>
+          <DeviceProperties>
+            <DeviceType>4005</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>10000</InternalPollInterval>
+            <CustomVariables />
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <ReadButtonPressedStateScriptPacketParser></ReadButtonPressedStateScriptPacketParser>
+            <WriteButtonPressedStateScriptPacketParser>SENDHTTPREQUEST("/Back");</WriteButtonPressedStateScriptPacketParser>
+            <IconId>211</IconId>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>${general_play}</Name>
+          <Model>PacketParserPushButton</Model>
+          <Id>-8</Id>
+          <DeviceProperties>
+            <DeviceType>4002</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>10000</InternalPollInterval>
+            <CustomVariables />
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <ReadButtonPressedStateScriptPacketParser></ReadButtonPressedStateScriptPacketParser>
+            <WriteButtonPressedStateScriptPacketParser>SENDHTTPREQUEST("/Play");</WriteButtonPressedStateScriptPacketParser>
+            <IconId>213</IconId>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>Preset</Name>
+          <Model>PacketParserMultiValueSwitch</Model>
+          <Id>-9</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>2500</InternalPollInterval>
+            <CustomVariables />
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <Value0Index>64</Value0Index>
+            <Value1Index>1</Value1Index>
+            <Value2Index>2</Value2Index>
+            <Value3Index>3</Value3Index>
+            <Value4Index>4</Value4Index>
+            <Value5Index>5</Value5Index>
+            <Value6Index>6</Value6Index>
+            <Value7Index>7</Value7Index>
+            <Value8Index>8</Value8Index>
+            <Value9Index>9</Value9Index>
+            <Value0Name>0</Value0Name>
+            <Value1Name>1</Value1Name>
+            <Value2Name>2</Value2Name>
+            <Value3Name>3</Value3Name>
+            <Value4Name>4</Value4Name>
+            <Value5Name>5</Value5Name>
+            <Value6Name>6</Value6Name>
+            <Value7Name>7</Value7Name>
+            <Value8Name>8</Value8Name>
+            <Value9Name>9</Value9Name>
+            <Value0IconId>5</Value0IconId>
+            <Value1IconId>6</Value1IconId>
+            <Value2IconId>7</Value2IconId>
+            <Value3IconId>8</Value3IconId>
+            <Value4IconId>9</Value4IconId>
+            <Value5IconId>10</Value5IconId>
+            <Value6IconId>11</Value6IconId>
+            <Value7IconId>12</Value7IconId>
+            <Value8IconId>13</Value8IconId>
+            <Value9IconId>14</Value9IconId>
+            <OffStateValue>-1</OffStateValue>
+            <ReadSwitchStateScriptPacketParser></ReadSwitchStateScriptPacketParser>
+            <WriteSwitchStateScriptPacketParser>SENDHTTPREQUEST("/Preset?id=" + Mu);</WriteSwitchStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>Sample - Jungle</Name>
+          <Model>PacketParserPushButton</Model>
+          <Id>-10</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>10000</InternalPollInterval>
+            <CustomVariables>[{"Name":"encodedURL","ValueTypeId":2,"NumericValue":0,"StringValue":"https%3A%2F%2Fsampleswap.org%2Fsamples-ghost%2FSOUND%2520EFFECTS%2520and%2520NOISES%2FAtmospherics%2F2830%5Bkb%5Datmospheric-quiet-jungle.mp3.mp3"}]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <ReadButtonPressedStateScriptPacketParser></ReadButtonPressedStateScriptPacketParser>
+            <WriteButtonPressedStateScriptPacketParser>SENDHTTPREQUEST("/Stop");
+SENDHTTPREQUEST("/Clear");
+SENDHTTPREQUEST("/Play?url=" + encodedURL);</WriteButtonPressedStateScriptPacketParser>
+            <IconId>86</IconId>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>Sample - Shutdown</Name>
+          <Model>PacketParserPushButton</Model>
+          <Id>-11</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>10000</InternalPollInterval>
+            <CustomVariables>[{"Name":"encodedURL","ValueTypeId":2,"NumericValue":0,"StringValue":"https%3A%2F%2Ftaphome.com%2Fdocs%2Fmp3%2Fshutdown.mp3"}]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <ReadButtonPressedStateScriptPacketParser></ReadButtonPressedStateScriptPacketParser>
+            <WriteButtonPressedStateScriptPacketParser>SENDHTTPREQUEST("/Stop");
+SENDHTTPREQUEST("/Clear");
+SENDHTTPREQUEST("/Play?url=" + encodedURL);</WriteButtonPressedStateScriptPacketParser>
+            <IconId>86</IconId>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>Make group with...</Name>
+          <Model>PacketParserSwitch</Model>
+          <Id>-12</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>30000</InternalPollInterval>
+            <CustomVariables>[{"Name":"IP","ValueTypeId":2,"NumericValue":0,"StringValue":"192.168.x.x"}]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <NegateState>False</NegateState>
+            <OnStateIconId>207</OnStateIconId>
+            <OffStateIconId>205</OffStateIconId>
+            <OnStateName>${general_on}</OnStateName>
+            <OffStateName>${general_off}</OffStateName>
+            <ReadSwitchStateScriptPacketParser>var response := SENDHTTPREQUEST("/SyncStatus");
+var slaves := PARSEXML(response.Content, "//SyncStatus/slave/@id");
+indexof(slaves, IP) &gt;= 0
+</ReadSwitchStateScriptPacketParser>
+            <WriteSwitchStateScriptPacketParser>if St
+	SENDHTTPREQUEST("/AddSlave?slave=" + IP + "&amp;ports=11000");
+else
+	SENDHTTPREQUEST("/RemoveSlave?slave=" + IP + "&amp;ports=11000");
+end</WriteSwitchStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>${stop}</Name>
+          <Model>PacketParserPushButton</Model>
+          <Id>-13</Id>
+          <DeviceProperties>
+            <DeviceType>4003</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>10000</InternalPollInterval>
+            <CustomVariables />
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <ReadButtonPressedStateScriptPacketParser></ReadButtonPressedStateScriptPacketParser>
+            <WriteButtonPressedStateScriptPacketParser>SENDHTTPREQUEST("/Stop");</WriteButtonPressedStateScriptPacketParser>
+            <IconId>215</IconId>
+          </DeviceProperties>
+        </Device>
+      </Devices>
+    </Module>
+  </Template>
+</Templates>
