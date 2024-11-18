@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Templates format="2" protocolVersion="83">
+  <Template revision="1.0" id="b2d58091-2938-4124-a25a-45498079c69b">
+    <SuggestedCCUParameters />
+    <RevisionHistory>
+      <Revision id="1.0">Initial version</Revision>
+    </RevisionHistory>
+    <Name>Shelly Flood MQTT</Name>
+    <CcuModel>PacketParserCCU</CcuModel>
+    <Producer>Shelly</Producer>
+    <Model>Flood</Model>
+    <Description></Description>
+    <ImportParameters>
+        <Parameter>
+            <Name>Mqtt Broker ${ipAddress}</Name>
+            <Value>192.168.0.1</Value>
+            <Id>IpAddress</Id>
+        </Parameter>
+        <Parameter>
+            <Name>Mqtt Broker port</Name>
+            <Value>1883</Value>
+            <Id>Port</Id>
+        </Parameter>
+    </ImportParameters>    
+    <Module>
+      <Name>Shelly Flood MQTT</Name>
+      <Id>-1</Id>
+      <Model>PacketParserModuleMqtt</Model>
+      <DeviceProperties>
+        <InternalPollInterval>5000</InternalPollInterval>
+        <CustomVariables>[{"Name":"sensor1_topic","ValueTypeId":2,"NumericValue":0,"StringValue":"shellyflood-deviceid"},{"Name":"sensor2_topic","ValueTypeId":2,"NumericValue":0,"StringValue":"shellyflood-deviceid"},{"Name":"sensor3_topic","ValueTypeId":2,"NumericValue":0,"StringValue":"shellyflood-deviceid"},{"Name":"sensor4_topic","ValueTypeId":2,"NumericValue":0,"StringValue":"shellyflood-deviceid"},{"Name":"sensor5_topic","ValueTypeId":2,"NumericValue":0,"StringValue":"shellyflood-deviceid"}]</CustomVariables>
+        <IpAddress>$[IpAddress]</IpAddress>
+        <Port>$[Port]</Port>
+        <RootTopic>shellies/#</RootTopic>
+      </DeviceProperties>
+      <Devices>
+        <Device>
+          <Name>${deviceType_FloodSensor} 1</Name>
+          <Model>PacketParserReedContact</Model>
+          <Id>-2</Id>
+          <DeviceProperties>
+            <DeviceType>1031</DeviceType>
+            <ReadScriptPacketParser></ReadScriptPacketParser>
+            <InternalPollInterval>2500</InternalPollInterval>
+            <CustomVariables>[{"Name":"temp","ValueTypeId":1,"NumericValue":0},{"Name":"battery","ValueTypeId":1,"NumericValue":0}]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser>[{"AttributeDefinition":{"Name":"Battery"},"ReadFormula":"battery \u002B \u0022%\u0022"},{"AttributeDefinition":{"Name":"Temperature"},"ReadFormula":"temp \u002B \u0022\u00B0C\u0022"}]</ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser>IF (INDEXOF(sensor1_topic, "shellyflood-deviceid") = 0)
+    ADDERROR("Set correct 'sensor1_topic' value in module variables. Topic format is 'shellyflood-&lt;deviceid&gt;'. The Device ID can be found by opening url 'http://shellyIpAddress', in Settings -&gt; Device info.");
+    RETURN(-1);
+END
+
+VAR topicPrefix := "shellies/" + sensor1_topic;
+
+IF (INDEXOF(RECEIVEDMSG.TOPIC, topicPrefix + "/sensor/flood") = 0)
+    VAR value := TOSTRING(RECEIVEDMSG.PAYLOAD);
+
+    IF (COMPARE(value, "true", CompareOptions.IgnoreCase) = 0)
+        Rc := 1;
+    ELSEIF (COMPARE(value, "false", CompareOptions.IgnoreCase) = 0)
+        Rc := 0;
+    ELSE
+        Rc := NaN;
+    END
+ELSEIF (INDEXOF(RECEIVEDMSG.TOPIC, topicPrefix + "/sensor/temperature") = 0)
+    temp := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD));
+ELSEIF (INDEXOF(RECEIVEDMSG.TOPIC, topicPrefix + "/sensor/battery") = 0)
+    battery := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD));
+    IF battery &lt; 20
+        ADDWARNING("Battery low (" + battery + "%)");
+    END
+END</ListenerScriptPacketParser>
+            <OnStateIconId>97</OnStateIconId>
+            <OffStateIconId>98</OffStateIconId>
+            <OnStateName>${Emergency_Alarm}</OnStateName>
+            <OffStateName>${Emergency_Ok}</OffStateName>
+            <ReadStateScriptPacketParser></ReadStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>${deviceType_FloodSensor} 2</Name>
+          <Model>PacketParserReedContact</Model>
+          <Id>-3</Id>
+          <DeviceProperties>
+            <DeviceType>1031</DeviceType>
+            <ReadScriptPacketParser></ReadScriptPacketParser>
+            <InternalPollInterval>2500</InternalPollInterval>
+            <CustomVariables>[{"Name":"temp","ValueTypeId":1,"NumericValue":0},{"Name":"battery","ValueTypeId":1,"NumericValue":0}]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser>[{"AttributeDefinition":{"Name":"Battery"},"ReadFormula":"battery \u002B \u0022%\u0022"},{"AttributeDefinition":{"Name":"Temperature"},"ReadFormula":"temp \u002B \u0022\u00B0C\u0022"}]</ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser>IF (INDEXOF(sensor2_topic, "shellyflood-deviceid") = 0)
+    ADDERROR("Set correct 'sensor2_topic' value in module variables. Topic format is 'shellyflood-&lt;deviceid&gt;'. The Device ID can be found by opening url 'http://shellyIpAddress', in Settings -&gt; Device info.");
+    RETURN(-1);
+END
+
+VAR topicPrefix := "shellies/" + sensor2_topic;
+
+IF (INDEXOF(RECEIVEDMSG.TOPIC, topicPrefix + "/sensor/flood") = 0)
+    VAR value := TOSTRING(RECEIVEDMSG.PAYLOAD);
+
+    IF (COMPARE(value, "true", CompareOptions.IgnoreCase) = 0)
+        Rc := 1;
+    ELSEIF (COMPARE(value, "false", CompareOptions.IgnoreCase) = 0)
+        Rc := 0;
+    ELSE
+        Rc := NaN;
+    END
+ELSEIF (INDEXOF(RECEIVEDMSG.TOPIC, topicPrefix + "/sensor/temperature") = 0)
+    temp := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD));
+ELSEIF (INDEXOF(RECEIVEDMSG.TOPIC, topicPrefix + "/sensor/battery") = 0)
+    battery := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD));
+    IF battery &lt; 20
+        ADDWARNING("Battery low (" + battery + "%)");
+    END
+END</ListenerScriptPacketParser>
+            <OnStateIconId>97</OnStateIconId>
+            <OffStateIconId>98</OffStateIconId>
+            <OnStateName>${Emergency_Alarm}</OnStateName>
+            <OffStateName>${Emergency_Ok}</OffStateName>
+            <ReadStateScriptPacketParser></ReadStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>${deviceType_FloodSensor} 3</Name>
+          <Model>PacketParserReedContact</Model>
+          <Id>-4</Id>
+          <DeviceProperties>
+            <DeviceType>1031</DeviceType>
+            <ReadScriptPacketParser></ReadScriptPacketParser>
+            <InternalPollInterval>2500</InternalPollInterval>
+            <CustomVariables>[{"Name":"temp","ValueTypeId":1,"NumericValue":0},{"Name":"battery","ValueTypeId":1,"NumericValue":0}]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser>[{"AttributeDefinition":{"Name":"Battery"},"ReadFormula":"battery \u002B \u0022%\u0022"},{"AttributeDefinition":{"Name":"Temperature"},"ReadFormula":"temp \u002B \u0022\u00B0C\u0022"}]</ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser>IF (INDEXOF(sensor3_topic, "shellyflood-deviceid") = 0)
+    ADDERROR("Set correct 'sensor3_topic' value in module variables. Topic format is 'shellyflood-&lt;deviceid&gt;'. The Device ID can be found by opening url 'http://shellyIpAddress', in Settings -&gt; Device info.");
+    RETURN(-1);
+END
+
+VAR topicPrefix := "shellies/" + sensor3_topic;
+
+IF (INDEXOF(RECEIVEDMSG.TOPIC, topicPrefix + "/sensor/flood") = 0)
+    VAR value := TOSTRING(RECEIVEDMSG.PAYLOAD);
+
+    IF (COMPARE(value, "true", CompareOptions.IgnoreCase) = 0)
+        Rc := 1;
+    ELSEIF (COMPARE(value, "false", CompareOptions.IgnoreCase) = 0)
+        Rc := 0;
+    ELSE
+        Rc := NaN;
+    END
+ELSEIF (INDEXOF(RECEIVEDMSG.TOPIC, topicPrefix + "/sensor/temperature") = 0)
+    temp := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD));
+ELSEIF (INDEXOF(RECEIVEDMSG.TOPIC, topicPrefix + "/sensor/battery") = 0)
+    battery := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD));
+    IF battery &lt; 20
+        ADDWARNING("Battery low (" + battery + "%)");
+    END
+END</ListenerScriptPacketParser>
+            <OnStateIconId>97</OnStateIconId>
+            <OffStateIconId>98</OffStateIconId>
+            <OnStateName>${Emergency_Alarm}</OnStateName>
+            <OffStateName>${Emergency_Ok}</OffStateName>
+            <ReadStateScriptPacketParser></ReadStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>${deviceType_FloodSensor} 4</Name>
+          <Model>PacketParserReedContact</Model>
+          <Id>-5</Id>
+          <DeviceProperties>
+            <DeviceType>1031</DeviceType>
+            <ReadScriptPacketParser></ReadScriptPacketParser>
+            <InternalPollInterval>2500</InternalPollInterval>
+            <CustomVariables>[{"Name":"temp","ValueTypeId":1,"NumericValue":0},{"Name":"battery","ValueTypeId":1,"NumericValue":0}]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser>[{"AttributeDefinition":{"Name":"Battery"},"ReadFormula":"battery \u002B \u0022%\u0022"},{"AttributeDefinition":{"Name":"Temperature"},"ReadFormula":"temp \u002B \u0022\u00B0C\u0022"}]</ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser>IF (INDEXOF(sensor4_topic, "shellyflood-deviceid") = 0)
+    ADDERROR("Set correct 'sensor4_topic' value in module variables. Topic format is 'shellyflood-&lt;deviceid&gt;'. The Device ID can be found by opening url 'http://shellyIpAddress', in Settings -&gt; Device info.");
+    RETURN(-1);
+END
+
+VAR topicPrefix := "shellies/" + sensor4_topic;
+
+IF (INDEXOF(RECEIVEDMSG.TOPIC, topicPrefix + "/sensor/flood") = 0)
+    VAR value := TOSTRING(RECEIVEDMSG.PAYLOAD);
+
+    IF (COMPARE(value, "true", CompareOptions.IgnoreCase) = 0)
+        Rc := 1;
+    ELSEIF (COMPARE(value, "false", CompareOptions.IgnoreCase) = 0)
+        Rc := 0;
+    ELSE
+        Rc := NaN;
+    END
+ELSEIF (INDEXOF(RECEIVEDMSG.TOPIC, topicPrefix + "/sensor/temperature") = 0)
+    temp := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD));
+ELSEIF (INDEXOF(RECEIVEDMSG.TOPIC, topicPrefix + "/sensor/battery") = 0)
+    battery := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD));
+    IF battery &lt; 20
+        ADDWARNING("Battery low (" + battery + "%)");
+    END
+END</ListenerScriptPacketParser>
+            <OnStateIconId>97</OnStateIconId>
+            <OffStateIconId>98</OffStateIconId>
+            <OnStateName>${Emergency_Alarm}</OnStateName>
+            <OffStateName>${Emergency_Ok}</OffStateName>
+            <ReadStateScriptPacketParser></ReadStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>${deviceType_FloodSensor} 5</Name>
+          <Model>PacketParserReedContact</Model>
+          <Id>-6</Id>
+          <DeviceProperties>
+            <DeviceType>1031</DeviceType>
+            <ReadScriptPacketParser></ReadScriptPacketParser>
+            <InternalPollInterval>2500</InternalPollInterval>
+            <CustomVariables>[{"Name":"temp","ValueTypeId":1,"NumericValue":0},{"Name":"battery","ValueTypeId":1,"NumericValue":0}]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser>[{"AttributeDefinition":{"Name":"Battery"},"ReadFormula":"battery \u002B \u0022%\u0022"},{"AttributeDefinition":{"Name":"Temperature"},"ReadFormula":"temp \u002B \u0022\u00B0C\u0022"}]</ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ListenerScriptPacketParser>IF (INDEXOF(sensor5_topic, "shellyflood-deviceid") = 0)
+    ADDERROR("Set correct 'sensor5_topic' value in module variables. Topic format is 'shellyflood-&lt;deviceid&gt;'. The Device ID can be found by opening url 'http://shellyIpAddress', in Settings -&gt; Device info.");
+    RETURN(-1);
+END
+
+VAR topicPrefix := "shellies/" + sensor5_topic;
+
+IF (INDEXOF(RECEIVEDMSG.TOPIC, topicPrefix + "/sensor/flood") = 0)
+    VAR value := TOSTRING(RECEIVEDMSG.PAYLOAD);
+
+    IF (COMPARE(value, "true", CompareOptions.IgnoreCase) = 0)
+        Rc := 1;
+    ELSEIF (COMPARE(value, "false", CompareOptions.IgnoreCase) = 0)
+        Rc := 0;
+    ELSE
+        Rc := NaN;
+    END
+ELSEIF (INDEXOF(RECEIVEDMSG.TOPIC, topicPrefix + "/sensor/temperature") = 0)
+    temp := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD));
+ELSEIF (INDEXOF(RECEIVEDMSG.TOPIC, topicPrefix + "/sensor/battery") = 0)
+    battery := TODOUBLE(TOSTRING(RECEIVEDMSG.PAYLOAD));
+    IF battery &lt; 20
+        ADDWARNING("Battery low (" + battery + "%)");
+    END
+END</ListenerScriptPacketParser>
+            <OnStateIconId>97</OnStateIconId>
+            <OffStateIconId>98</OffStateIconId>
+            <OnStateName>${Emergency_Alarm}</OnStateName>
+            <OffStateName>${Emergency_Ok}</OffStateName>
+            <ReadStateScriptPacketParser></ReadStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+      </Devices>
+    </Module>
+  </Template>
+</Templates>
