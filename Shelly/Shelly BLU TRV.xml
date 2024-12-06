@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Templates format="2" protocolVersion="83">
+  <Template revision="1.0" id="a3af7fd9-a79e-4d44-bb1f-61075c12c976">
+    <SuggestedCCUParameters />
+    <RevisionHistory>
+      <Revision id="1.0">Initial version</Revision>
+    </RevisionHistory>
+    <Name>Shelly BLU TRV</Name>
+    <CcuModel>PacketParserCCU</CcuModel>
+    <Producer></Producer>
+    <Model></Model>
+    <Description></Description>
+    <ImportParameters>
+        <Parameter>
+            <Name>${ipAddress}</Name>	
+            <Value>192.168.0.1</Value>
+            <Id>IpAddress</Id>
+        </Parameter>
+        <Parameter>
+            <Name>Id</Name>	
+            <Value>200</Value>
+            <Id>ID</Id>
+        </Parameter>        
+    </ImportParameters>            
+    <Module>
+      <Name>Shelly BLU TRV</Name>
+      <Id>-1</Id>
+      <Model>PacketParserModuleHttp</Model>
+      <DeviceProperties>
+        <ReadScriptPacketParser>VAR response := SENDHTTPREQUEST("/rpc/BluTrv.GetStatus?id=" + ID);
+IF response.IsSuccess
+    Status := response.Content;
+END
+
+response := SENDHTTPREQUEST("/rpc/BluTrv.GetConfig?id=" + ID);
+IF response.IsSuccess
+    Config := response.Content;
+END
+
+response := SENDHTTPREQUEST("/rpc/BluTrv.GetRemoteStatus?id=" + ID);
+IF response.IsSuccess
+    RemoteStatus := response.Content;
+END
+
+response := SENDHTTPREQUEST("/rpc/BluTrv.GetRemoteConfig?id=" + ID);
+IF response.IsSuccess
+    RemoteConfig := response.Content;
+END
+
+if(PARSEJSON(RemoteStatus, "$.trv[0].errors", true), adderror("Error: " + PARSEJSON(RemoteStatus, "$.trv[0].errors")));
+if(PARSEJSON(Status, "$.update.has_update", true), addwarning("Firmware update is available"));
+
+var battery := PARSEJSON(Status, "$.battery");
+if battery &lt; 25
+    addwarning("Battery charge is criticaly low");
+elseif battery &lt; 50
+    addwarning("Low battery");
+end</ReadScriptPacketParser>
+        <InternalPollInterval>3000</InternalPollInterval>
+        <CustomVariables>[{"Name":"ID","ValueTypeId":1,"NumericValue":$[ID]},{"Name":"Status","ValueTypeId":2,"NumericValue":0,"StringValue":""},{"Name":"Config","ValueTypeId":2,"NumericValue":0,"StringValue":""},{"Name":"RemoteStatus","ValueTypeId":2,"NumericValue":0,"StringValue":""},{"Name":"RemoteConfig","ValueTypeId":2,"NumericValue":0,"StringValue":""}]</CustomVariables>
+        <ServiceAttributesScriptsPacketParser>[{"AttributeDefinition":{"Name":"Received signal strength"},"ReadFormula":"PARSEJSON(Status, \u0022$.rssi\u0022)"}]</ServiceAttributesScriptsPacketParser>
+        <ServiceActionsScriptsPacketParser>[{"ActionDefinition":{"Name":"Reboot","NumericParameters":[],"BoolParameters":[],"EnumParameters":[]},"Script":"VAR response := SENDHTTPREQUEST(\u0022rpc/BluTrv.Call?id=\u0022 \u002B ID \u002B \u0022\u0026method=\\\u0022Shelly.Reboot\\\u0022\u0026params={\\\u0022id\\\u0022:0}\u0022);\r\nif(response.IsSuccess, return(\u0022OK\u0022), return(response.Content));\r\n"},{"ActionDefinition":{"Name":"Calibrate","NumericParameters":[],"BoolParameters":[],"EnumParameters":[]},"Script":"VAR response := SENDHTTPREQUEST(\u0022rpc/BluTrv.Call?id=\u0022 \u002B ID \u002B \u0022\u0026method=\\\u0022TRV.Calibrate\\\u0022\u0026params={\\\u0022id\\\u0022:0}\u0022);\r\nif(response.IsSuccess, return(\u0022OK\u0022), return(response.Content));\r\n"}]</ServiceActionsScriptsPacketParser>
+        <IpAddress>$[IpAddress]</IpAddress>
+        <Port>80</Port>
+        <UseHttps>False</UseHttps>
+      </DeviceProperties>
+      <Devices>
+        <Device>
+          <Name>Battery</Name>
+          <Model>PacketParserMultiValueSwitch</Model>
+          <Id>-2</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser></ReadScriptPacketParser>
+            <InternalPollInterval>2500</InternalPollInterval>
+            <CustomVariables></CustomVariables>
+            <ServiceAttributesScriptsPacketParser>[{"AttributeDefinition":{"Name":"Value [%]"},"ReadFormula":"PARSEJSON(Status, \u0022$.battery\u0022);"}]</ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <Value0Index>0</Value0Index>
+            <Value1Index>1</Value1Index>
+            <Value2Index>2</Value2Index>
+            <Value3Index>3</Value3Index>
+            <Value4Index>4</Value4Index>
+            <Value5Index>69</Value5Index>
+            <Value6Index>70</Value6Index>
+            <Value7Index>71</Value7Index>
+            <Value8Index>72</Value8Index>
+            <Value9Index>73</Value9Index>
+            <Value0Name>Critical</Value0Name>
+            <Value1Name>Low</Value1Name>
+            <Value2Name>Normal</Value2Name>
+            <Value3Name>Full</Value3Name>
+            <Value4Name>Charging</Value4Name>
+            <Value5Name>5</Value5Name>
+            <Value6Name>6</Value6Name>
+            <Value7Name>7</Value7Name>
+            <Value8Name>8</Value8Name>
+            <Value9Name>9</Value9Name>
+            <Value0IconId>232</Value0IconId>
+            <Value1IconId>229</Value1IconId>
+            <Value2IconId>228</Value2IconId>
+            <Value3IconId>230</Value3IconId>
+            <Value4IconId>231</Value4IconId>
+            <Value5IconId>10</Value5IconId>
+            <Value6IconId>11</Value6IconId>
+            <Value7IconId>12</Value7IconId>
+            <Value8IconId>13</Value8IconId>
+            <Value9IconId>14</Value9IconId>
+            <OffStateValue>0</OffStateValue>
+            <ReadSwitchStateScriptPacketParser>var battery := PARSEJSON(Status, "$.battery");
+if battery &gt; 75
+    return(3);
+elseif battery &gt; 50
+    return(2);
+elseif battery &gt; 25
+    return(1);
+else
+    return(0);
+end</ReadSwitchStateScriptPacketParser>
+            <WriteSwitchStateScriptPacketParser></WriteSwitchStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>${adddevice_thermostat}</Name>
+          <Model>PacketParserThermostat</Model>
+          <Id>-3</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser></ReadScriptPacketParser>
+            <InternalPollInterval>3000</InternalPollInterval>
+            <CustomVariables>[]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser>[{"AttributeDefinition":{"Name":"${device_variable_valvestate} [%]"},"ReadFormula":"PARSEJSON(RemoteStatus, \u0022$.status.trv:0.pos\u0022)"}]</ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser>[]</ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <MinTemperature>4</MinTemperature>
+            <MaxTemperature>31</MaxTemperature>
+            <ReadCurrentTemperatureScriptPacketParser>PARSEJSON(RemoteStatus, "$.status.trv:0.current_C")</ReadCurrentTemperatureScriptPacketParser>
+            <ReadTemperatureSetPointScriptPacketParser>PARSEJSON(RemoteStatus, "$.status.trv:0.target_C")</ReadTemperatureSetPointScriptPacketParser>
+            <ReadHumidityScriptPacketParser></ReadHumidityScriptPacketParser>
+            <WriteTemperatureSetPointScriptPacketParser>VAR response := SENDHTTPREQUEST("rpc/BluTrv.Call?id=" + ID + "&amp;method=\"TRV.SetTarget\"&amp;params={\"id\":0,\"target_C\":" + Se + "}");
+IF response.IsSuccess = false
+  ADDERROR(response.StatusCode);
+END</WriteTemperatureSetPointScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+      </Devices>
+    </Module>
+  </Template>
+</Templates>
