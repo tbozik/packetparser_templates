@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Templates format="2" protocolVersion="84" locationId="74b02c08-3b21-4cd2-b11b-cdca393c21e7">
+  <Template revision="1.0">
+    <SuggestedCCUParameters />
+    <RevisionHistory>
+      <Revision id="1.0">Initial version</Revision>
+    </RevisionHistory>
+    <Name>OpenHolidays</Name>
+    <CcuModel>PacketParserCCU</CcuModel>
+    <Producer>ToBo (tomas/bozik@gmail.com)</Producer>
+    <Model></Model>
+    <Description></Description>
+    <Module>
+      <Name>OpenHolidays</Name>
+      <Id>-1</Id>
+      <Model>PacketParserModuleHttp</Model>
+      <DeviceProperties>
+        <InternalPollInterval>5000</InternalPollInterval>
+        <CustomVariables>[{"Name":"Country","ValueTypeId":2,"NumericValue":0,"StringValue":"SK"},{"Name":"Region","ValueTypeId":2,"NumericValue":0,"StringValue":"SK-BC"}]</CustomVariables>
+        <IpAddress>openholidaysapi.org</IpAddress>
+        <Port>443</Port>
+        <UseHttps>True</UseHttps>
+      </DeviceProperties>
+      <Devices>
+        <Device>
+          <Name>IsPublicHoliday</Name>
+          <Model>PacketParserSwitch</Model>
+          <Id>-2</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>3600000</InternalPollInterval>
+            <CustomVariables />
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <NegateState>False</NegateState>
+            <OnStateIconId>35</OnStateIconId>
+            <OffStateIconId>36</OffStateIconId>
+            <OnStateName>Yes</OnStateName>
+            <OffStateName>No</OffStateName>
+            <ReadSwitchStateScriptPacketParser>var dt := NOW();
+var date := dt.YEAR + "-" + dt.MONTH + "-" + dt.DAY;
+var req:= "Holidays/PublicHolidays?countryIsoCode=" + Country + "&amp;subdivisionCode=" + Region + "&amp;validFrom="+date + "&amp;validTo="+date;
+var response := SENDHTTPREQUEST(req);
+
+if response.IsSuccess
+  var content := response.Content;
+  var isHoliday := PARSEJSON( content, "[0].temporalScope", 1);
+  if isHoliday != null
+    return(1);
+  else
+    return(0);
+  end
+else
+  adderror(response.StatusCode + " (" + response.ReasonPhrase + ")");
+  return(NaN);
+end</ReadSwitchStateScriptPacketParser>
+            <WriteSwitchStateScriptPacketParser></WriteSwitchStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>IsSchoolHoliday</Name>
+          <Model>PacketParserSwitch</Model>
+          <Id>-3</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>3600000</InternalPollInterval>
+            <CustomVariables>[]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser></ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <NegateState>False</NegateState>
+            <OnStateIconId>35</OnStateIconId>
+            <OffStateIconId>36</OffStateIconId>
+            <OnStateName>Yes</OnStateName>
+            <OffStateName>No</OffStateName>
+            <ReadSwitchStateScriptPacketParser>var dt := NOW();
+var date := dt.YEAR + "-" + dt.MONTH + "-" + dt.DAY;
+var req:= "Holidays/SchoolHolidays?countryIsoCode=" + Country + "&amp;subdivisionCode=" + Region + "&amp;validFrom="+date + "&amp;validTo="+date;
+var response := SENDHTTPREQUEST(req);
+
+if response.IsSuccess
+  var content := response.Content;
+  var isHoliday := PARSEJSON( content, "[0].temporalScope", 1);
+  if isHoliday != null
+    return(1);
+  else
+    return(0);
+  end
+else
+  adderror(response.StatusCode + " (" + response.ReasonPhrase + ")");
+  return(NaN);
+end</ReadSwitchStateScriptPacketParser>
+            <WriteSwitchStateScriptPacketParser></WriteSwitchStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+        <Device>
+          <Name>IsWeekend</Name>
+          <Model>PacketParserSwitch</Model>
+          <Id>-4</Id>
+          <DeviceProperties>
+            <DeviceType>0</DeviceType>
+            <ReadScriptPacketParser />
+            <InternalPollInterval>3600000</InternalPollInterval>
+            <CustomVariables>[]</CustomVariables>
+            <ServiceAttributesScriptsPacketParser>[]</ServiceAttributesScriptsPacketParser>
+            <ServiceActionsScriptsPacketParser></ServiceActionsScriptsPacketParser>
+            <ShouldDoPeriodicWrite>False</ShouldDoPeriodicWrite>
+            <NegateState>False</NegateState>
+            <OnStateIconId>35</OnStateIconId>
+            <OffStateIconId>58</OffStateIconId>
+            <OnStateName>Yes</OnStateName>
+            <OffStateName>No</OffStateName>
+            <ReadSwitchStateScriptPacketParser>var dt := NOW();
+return(dt.DAYOFWEEK = 0 or dt.DAYOFWEEK = 6);
+</ReadSwitchStateScriptPacketParser>
+            <WriteSwitchStateScriptPacketParser></WriteSwitchStateScriptPacketParser>
+          </DeviceProperties>
+        </Device>
+      </Devices>
+    </Module>
+  </Template>
+</Templates>
