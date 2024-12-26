@@ -41,7 +41,7 @@
             <OffStateName>No</OffStateName>
             <ReadSwitchStateScriptPacketParser>var dt := NOW();
 var date := dt.YEAR + "-" + dt.MONTH + "-" + dt.DAY;
-var req:= "Holidays/PublicHolidays?countryIsoCode=" + Country + "&amp;subdivisionCode=" + Region + "&amp;validFrom="+date + "&amp;validTo="+date;
+var req:= "PublicHolidays?countryIsoCode=" + Country + "&amp;subdivisionCode=" + Region + "&amp;validFrom="+date + "&amp;validTo="+date;
 var response := SENDHTTPREQUEST(req);
 
 if response.IsSuccess
@@ -78,7 +78,7 @@ end</ReadSwitchStateScriptPacketParser>
             <OffStateName>No</OffStateName>
             <ReadSwitchStateScriptPacketParser>var dt := NOW();
 var date := dt.YEAR + "-" + dt.MONTH + "-" + dt.DAY;
-var req:= "Holidays/SchoolHolidays?countryIsoCode=" + Country + "&amp;subdivisionCode=" + Region + "&amp;validFrom="+date + "&amp;validTo="+date;
+var req:= "SchoolHolidays?countryIsoCode=" + Country + "&amp;subdivisionCode=" + Region + "&amp;validFrom="+date + "&amp;validTo="+date;
 var response := SENDHTTPREQUEST(req);
 
 if response.IsSuccess
