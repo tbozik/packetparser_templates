@@ -10,13 +10,25 @@
     <Producer>ToBo (tomas/bozik@gmail.com)</Producer>
     <Model></Model>
     <Description></Description>
+    <ImportParameters>
+		  <Parameter>
+			  <Name>Country</Name>	
+			  <Value>SK</Value>
+			  <Id>Country</Id>
+  		</Parameter>
+  		<Parameter>
+  			<Name>Region</Name>	
+  			<Value>SK-BC</Value>
+  			<Id>Region</Id>
+  		</Parameter>
+  	</ImportParameters>
     <Module>
       <Name>OpenHolidays</Name>
       <Id>-1</Id>
       <Model>PacketParserModuleHttp</Model>
       <DeviceProperties>
         <InternalPollInterval>5000</InternalPollInterval>
-        <CustomVariables>[{"Name":"Country","ValueTypeId":2,"NumericValue":0,"StringValue":"SK"},{"Name":"Region","ValueTypeId":2,"NumericValue":0,"StringValue":"SK-BC"}]</CustomVariables>
+        <CustomVariables>[{"Name":"Country","ValueTypeId":2,"NumericValue":0,"StringValue":"$[Country]"},{"Name":"Region","ValueTypeId":2,"NumericValue":0,"StringValue":"$[Region]"}]</CustomVariables>
         <IpAddress>openholidaysapi.org</IpAddress>
         <Port>443</Port>
         <UseHttps>True</UseHttps>
