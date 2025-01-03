@@ -7,10 +7,10 @@ Module is predefined for Slovakia/Banska Bystrica region.
 In order to make module to work correctly, module variables have to be modified according to the country and region.
 
 <b>Country</b><br/>
-Set the Country iso code based on the list from the URL: https://openholidaysapi.org/Regional/Countries<br/><br/>
+Set the Country iso code based on the list from the URL: https://openholidaysapi.org/Countries<br/><br/>
 <b>Region</b><br/>
-Set the Region iso code based on list from this url: https://openholidaysapi.org/Regional/Subdivisions?countryIsoCode=<i>{CountryIsoCode}</i> <br/>
-for Slovakia it is https://openholidaysapi.org/Regional/Subdivisions?countryIsoCode=<b>SK</b>
+Set the Region iso code based on list from this url: https://openholidaysapi.org/Subdivisions?countryIsoCode=<i>{CountryIsoCode}</i> <br/>
+for Slovakia it is https://openholidaysapi.org/Subdivisions?countryIsoCode=SK
 
 ## Module Devices
 <ul>
